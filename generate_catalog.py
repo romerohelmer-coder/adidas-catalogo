@@ -5,7 +5,7 @@ import math
 # LEER EXCEL
 # ==========================================
 df = pd.read_excel(
-    "adidas-scraper/adidas_enterprise_final.xlsx"
+    "adidas-scraper/adidas_shop_final.xlsx"
 )
 
 # ==========================================
@@ -14,13 +14,55 @@ df = pd.read_excel(
 df = df.fillna("")
 
 # ==========================================
-# SOLO PRODUCTOS CON DESCUENTO
+# FILTRAR PRODUCTOS NO DESEADOS
+# ==========================================
+exclude_keywords = [
+
+    # medias
+    "sock",
+    "socks",
+
+    # futbol accesorios
+    "shin guard",
+    "shin guards",
+
+    # accesorios varios
+    "ball",
+    "water bottle",
+    "bottle",
+    "glove",
+    "belt",
+    "headband",
+    "wristband",
+
+    # gym pequeños
+    "mat",
+    "roller",
+
+    # otros
+    "keychain",
+    "sticker"
+]
+
+df = df[
+    ~df["Nombre"]
+    .str.lower()
+    .str.contains(
+        "|".join(exclude_keywords),
+        na=False
+    )
+]
+
+# ==========================================
+# SOLO CATEGORIAS PRINCIPALES
 # ==========================================
 df = df[
-    pd.to_numeric(
-        df["Descuento"],
-        errors="coerce"
-    ) <= -20
+    df["Categoria Final"]
+    .isin([
+        "Shoes",
+        "Clothing",
+        "Accessories"
+    ])
 ]
 
 # ==========================================
@@ -35,47 +77,34 @@ TAX_USA = 0.07
 
 COSTO_LIBRA_USD = 2.1
 
-MARGEN = 1.6
+MARGEN = 1.1
 
 # ==========================================
 # PESO ESTIMADO
 # ==========================================
 def estimate_weight(row):
 
-    categoria = str(
-        row.get("Categoria", "")
-    ).lower()
+    tipo = row.get(
+        "Categoria Final",
+        ""
+    )
 
     nombre = str(
         row.get("Nombre", "")
     ).lower()
 
-    # ======================================
-    # ZAPATOS NIÑO
-    # ======================================
-    if (
-        "kids" in nombre
-        or "child" in nombre
-        or "infant" in nombre
-    ):
+    if tipo == "Shoes":
 
-        return 2
+        if (
+            "kids" in nombre
+            or "child" in nombre
+            or "infant" in nombre
+        ):
 
-    # ======================================
-    # ZAPATOS ADULTO
-    # ======================================
-    if categoria in [
-        "Running",
-        "Sportswear",
-        "Originals",
-        "Basketball"
-    ]:
+            return 2
 
         return 3
 
-    # ======================================
-    # MINIMO GENERAL
-    # ======================================
     return 2
 
 # ==========================================
@@ -137,7 +166,11 @@ df["Precio Venta COP"] = (
 # ORDENAR
 # ==========================================
 df.sort_values(
-    by="Precio Venta COP",
+    by=[
+        "Genero",
+        "Categoria Final",
+        "Precio Venta COP"
+    ],
     ascending=True,
     inplace=True
 )
@@ -185,6 +218,41 @@ h1 {
     color: gray;
 
     margin-bottom: 30px;
+}
+
+.filters {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    justify-content: center;
+
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: black;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.filter-btn:hover {
+
+    opacity: 0.85;
 }
 
 .grid {
@@ -286,13 +354,18 @@ h1 {
 
 .footer {
 
-    margin-top: 50px;
+    margin-top: 70px;
 
     text-align: center;
 
     color: gray;
 
     font-size: 12px;
+}
+
+.hidden {
+
+    display: none;
 }
 
 </style>
@@ -303,24 +376,85 @@ h1 {
 <h1>Catalogo Adidas</h1>
 
 <div class="subtitle">
-Productos seleccionados con descuento
+Catalogo actualizado automaticamente
+</div>
+
+<div class="filters">
+
+<button class="filter-btn"
+onclick="filterProducts('all')">
+ALL
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Men')">
+MEN
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Women')">
+WOMEN
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Kids')">
+KIDS
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Shoes')">
+SHOES
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Clothing')">
+CLOTHING
+</button>
+
+<button class="filter-btn"
+onclick="filterProducts('Accessories')">
+ACCESSORIES
+</button>
+
 </div>
 
 <div class="grid">
 """
 
 # ==========================================
-# GENERAR TARJETAS
+# TARJETAS
 # ==========================================
 for _, row in df.iterrows():
 
-    categoria = row.get("Categoria", "")
+    genero = row.get(
+        "Genero",
+        ""
+    )
 
-    nombre = row.get("Nombre", "")
+    categoria_final = row.get(
+        "Categoria Final",
+        ""
+    )
 
-    tallas = row.get("Tallas", "")
+    categoria = row.get(
+        "Categoria Adidas",
+        ""
+    )
 
-    imagen = row.get("Imagen", "")
+    nombre = row.get(
+        "Nombre",
+        ""
+    )
+
+    tallas = row.get(
+        "Tallas",
+        ""
+    )
+
+    imagen = row.get(
+        "Imagen",
+        ""
+    )
 
     precio_venta_cop = row.get(
         "Precio Venta COP",
@@ -328,7 +462,9 @@ for _, row in df.iterrows():
     )
 
     card = f"""
-    <div class="card">
+    <div class="card"
+        data-genero="{genero}"
+        data-tipo="{categoria_final}">
 
         <div class="image-container">
             <img src="{imagen}" alt="{nombre}">
@@ -337,7 +473,7 @@ for _, row in df.iterrows():
         <div class="content">
 
             <div class="category">
-                {categoria}
+                {genero} | {categoria}
             </div>
 
             <div class="title">
@@ -361,10 +497,54 @@ for _, row in df.iterrows():
     html += card
 
 # ==========================================
-# CIERRE HTML
+# JS FILTROS
 # ==========================================
 html += """
+
 </div>
+
+<script>
+
+function filterProducts(filter) {
+
+    const cards =
+    document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+
+        const genero =
+        card.dataset.genero;
+
+        const tipo =
+        card.dataset.tipo;
+
+        if (
+            filter === 'all'
+        ) {
+
+            card.classList.remove('hidden');
+
+            return;
+        }
+
+        if (
+            genero === filter
+            ||
+            tipo === filter
+        ) {
+
+            card.classList.remove('hidden');
+
+        } else {
+
+            card.classList.add('hidden');
+        }
+
+    });
+
+}
+
+</script>
 
 <div class="footer">
 Catalogo generado automaticamente

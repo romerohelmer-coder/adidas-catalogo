@@ -14,7 +14,6 @@ from concurrent.futures import ThreadPoolExecutor
 # ==========================================
 options = webdriver.ChromeOptions()
 
-# Adidas funciona mejor SIN headless
 options.add_argument("--start-maximized")
 
 # ==========================================
@@ -28,7 +27,7 @@ driver = webdriver.Chrome(
 # ==========================================
 # CONFIG
 # ==========================================
-BASE_URL = "https://www.adidas.com/us/kids"
+BASE_URL = "https://www.adidas.com/us/shop"
 
 VIEW_SIZE = 48
 
@@ -74,6 +73,118 @@ def normalize_category(category):
     )
 
 # ==========================================
+# CLASIFICAR GENERO
+# ==========================================
+def classify_gender(nombre, subtitle, url):
+
+    text = f"""
+    {nombre}
+    {subtitle}
+    {url}
+    """.lower()
+
+    if (
+        "women" in text
+        or "female" in text
+        or "/women-" in text
+    ):
+
+        return "Women"
+
+    if (
+        "men" in text
+        or "male" in text
+        or "/men-" in text
+    ):
+
+        return "Men"
+
+    if (
+        "kids" in text
+        or "child" in text
+        or "infant" in text
+        or "/kids-" in text
+    ):
+
+        return "Kids"
+
+    return "Unisex"
+
+# ==========================================
+# CLASIFICAR PRODUCTO
+# ==========================================
+def classify_product(nombre):
+
+    text = str(nombre).lower()
+
+    # ======================================
+    # ACCESORIOS
+    # ======================================
+    accessories_keywords = [
+
+        "backpack",
+
+        "bag",
+
+        "cap",
+
+        "hat",
+
+        "sock",
+
+        "bottle",
+
+        "ball",
+
+        "glove",
+
+        "belt"
+    ]
+
+    for word in accessories_keywords:
+
+        if word in text:
+
+            return "Accessories"
+
+    # ======================================
+    # ROPA
+    # ======================================
+    clothing_keywords = [
+
+        "hoodie",
+
+        "pants",
+
+        "shirt",
+
+        "shorts",
+
+        "jacket",
+
+        "tee",
+
+        "jersey",
+
+        "tracksuit",
+
+        "dress",
+
+        "leggings"
+    ]
+
+    for word in clothing_keywords:
+
+        if word in text:
+
+            return "Clothing"
+
+    # ======================================
+    # ZAPATOS
+    # ======================================
+    return "Shoes"
+
+# ==========================================
 # EXTRAER PRODUCTS
 # ==========================================
 def get_products_from_page(url):
@@ -114,10 +225,6 @@ def get_products_from_page(url):
             return []
 
         next_data = match.group(1)
-
-        print("\n================================")
-        print("NEXT DATA OK")
-        print("================================")
 
         data = json.loads(next_data)
 
@@ -178,23 +285,13 @@ def get_sizes(sku):
 
         """, api_url)
 
-        print(
-            "SIZE API:",
-            sku,
-            result["status"]
-        )
-
         if result["status"] != 200:
 
             return {
 
                 "sizes": "",
 
-                "sizes_count": 0,
-
-                "stock": "",
-
-                "availability": ""
+                "sizes_count": 0
             }
 
         data = json.loads(
@@ -207,10 +304,6 @@ def get_sizes(sku):
         )
 
         sizes = []
-
-        stock = []
-
-        availability = []
 
         for item in variation_list:
 
@@ -227,30 +320,13 @@ def get_sizes(sku):
                 ""
             )
 
-            qty = item.get(
-                "availability",
-                ""
-            )
-
             sizes.append(str(size))
-
-            stock.append(
-                f"{size}:{qty}"
-            )
-
-            availability.append(
-                f"{size}:{status}"
-            )
 
         return {
 
             "sizes": ", ".join(sizes),
 
-            "sizes_count": len(sizes),
-
-            "stock": " | ".join(stock),
-
-            "availability": " | ".join(availability)
+            "sizes_count": len(sizes)
         }
 
     except Exception as e:
@@ -261,136 +337,8 @@ def get_sizes(sku):
 
             "sizes": "",
 
-            "sizes_count": 0,
-
-            "stock": "",
-
-            "availability": ""
+            "sizes_count": 0
         }
-
-# ==========================================
-# DEAL SCORE
-# ==========================================
-def calculate_score(row):
-
-    score = 0
-
-    # ======================================
-    # DESCUENTO
-    # ======================================
-    try:
-
-        discount = abs(
-            int(row["Descuento"])
-        )
-
-        if discount >= 70:
-            score += 50
-
-        elif discount >= 50:
-            score += 40
-
-        elif discount >= 40:
-            score += 30
-
-        elif discount >= 30:
-            score += 20
-
-    except:
-        pass
-
-    # ======================================
-    # TALLAS
-    # ======================================
-    try:
-
-        sizes_count = int(
-            row["Cantidad Tallas"]
-        )
-
-        if sizes_count >= 8:
-            score += 25
-
-        elif sizes_count >= 5:
-            score += 15
-
-        elif sizes_count >= 3:
-            score += 10
-
-    except:
-        pass
-
-    # ======================================
-    # RATING
-    # ======================================
-    try:
-
-        rating = float(
-            row["Rating"]
-        )
-
-        if rating >= 4.8:
-            score += 20
-
-        elif rating >= 4.5:
-            score += 15
-
-        elif rating >= 4:
-            score += 10
-
-    except:
-        pass
-
-    # ======================================
-    # REVIEWS
-    # ======================================
-    try:
-
-        reviews = int(
-            row["Reviews"]
-        )
-
-        if reviews >= 1000:
-            score += 20
-
-        elif reviews >= 300:
-            score += 15
-
-        elif reviews >= 100:
-            score += 10
-
-    except:
-        pass
-
-    # ======================================
-    # MODELOS POPULARES
-    # ======================================
-    nombre = str(
-        row["Nombre"]
-    ).lower()
-
-    hype_keywords = [
-
-        "samba",
-
-        "gazelle",
-
-        "campus",
-
-        "handball",
-
-        "superstar"
-    ]
-
-    for keyword in hype_keywords:
-
-        if keyword in nombre:
-
-            score += 15
-
-            break
-
-    return score
 
 # ==========================================
 # PROCESAR PRODUCTO
@@ -425,21 +373,41 @@ def process_product(p):
             )
         )
 
+        # ==================================
+        # LINK
+        # ==================================
         link = p.get(
             "url",
             ""
         )
 
+        # ==================================
+        # GENERO
+        # ==================================
+        genero = classify_gender(
+            nombre,
+            subtitle,
+            link
+        )
+
+        # ==================================
+        # TIPO PRODUCTO
+        # ==================================
+        categoria_final = classify_product(
+            nombre
+        )
+
+        # ==================================
+        # IMAGEN
+        # ==================================
         image = p.get(
             "image",
             ""
         )
 
-        hover_image = p.get(
-            "hoverImage",
-            ""
-        )
-
+        # ==================================
+        # RATING
+        # ==================================
         rating = p.get(
             "rating",
             ""
@@ -450,6 +418,9 @@ def process_product(p):
             ""
         )
 
+        # ==================================
+        # BADGES
+        # ==================================
         badges = p.get(
             "badges",
             []
@@ -512,6 +483,9 @@ def process_product(p):
             False
         )
 
+        # ==================================
+        # COLORES
+        # ==================================
         colors = len(
             p.get(
                 "colourVariations",
@@ -526,6 +500,8 @@ def process_product(p):
 
         print("--------------------------------")
         print(nombre)
+        print("Genero:", genero)
+        print("Tipo:", categoria_final)
         print("Categoria:", categoria)
         print("SKU:", sku)
         print("Precio:", sale_price)
@@ -533,7 +509,11 @@ def process_product(p):
 
         return {
 
-            "Categoria": categoria,
+            "Genero": genero,
+
+            "Categoria Final": categoria_final,
+
+            "Categoria Adidas": categoria,
 
             "SKU": sku,
 
@@ -561,13 +541,7 @@ def process_product(p):
 
             "Cantidad Tallas": sizes_data["sizes_count"],
 
-            "Stock": sizes_data["stock"],
-
-            "Availability": sizes_data["availability"],
-
             "Imagen": image,
-
-            "Hover Imagen": hover_image,
 
             "Link": link
         }
@@ -649,24 +623,10 @@ while True:
     )
 
     # ======================================
-    # SCORE TEMP
-    # ======================================
-    temp_df["Deal Score"] = temp_df.apply(
-        calculate_score,
-        axis=1
-    )
-
-    temp_df.sort_values(
-        by="Deal Score",
-        ascending=False,
-        inplace=True
-    )
-
-    # ======================================
     # GUARDADO INCREMENTAL
     # ======================================
     temp_df.to_excel(
-        "adidas_incremental.xlsx",
+        "adidas_shop_incremental.xlsx",
         index=False
     )
 
@@ -693,26 +653,22 @@ df.drop_duplicates(
 )
 
 # ==========================================
-# DEAL SCORE FINAL
-# ==========================================
-df["Deal Score"] = df.apply(
-    calculate_score,
-    axis=1
-)
-
-# ==========================================
 # ORDENAR
 # ==========================================
 df.sort_values(
-    by="Deal Score",
-    ascending=False,
+    by=[
+        "Genero",
+        "Categoria Final",
+        "Precio"
+    ],
+    ascending=True,
     inplace=True
 )
 
 # ==========================================
 # EXPORT FINAL
 # ==========================================
-file_name = "adidas_enterprise_final.xlsx"
+file_name = "adidas_shop_final.xlsx"
 
 df.to_excel(
     file_name,
