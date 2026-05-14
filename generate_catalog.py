@@ -66,8 +66,14 @@ TAX_USA = 0.07
 # Adidas coupon
 ADIDAS_DISCOUNT = 0.30
 
-# Tope ganancia
+# Ganancia maxima
 MAX_PROFIT_USD = 35
+
+# Ganancia minima
+MIN_PROFIT_USD = 15
+
+# Multiplicador
+MULTIPLIER = 1.8
 
 # ==========================================
 # LIMPIAR PRECIO
@@ -133,8 +139,18 @@ df["Costo Total USD"] = (
 # ==========================================
 def calculate_profit(total_usd):
 
-    profit = total_usd
+    # multiplicador
+    profit = (
+        total_usd
+        * (MULTIPLIER - 1)
+    )
 
+    # minimo ganancia
+    if profit < MIN_PROFIT_USD:
+
+        profit = MIN_PROFIT_USD
+
+    # maximo ganancia
     if profit > MAX_PROFIT_USD:
 
         profit = MAX_PROFIT_USD
