@@ -85,7 +85,7 @@ df["Taxes USD"] = (
 )
 
 # ==========================================
-# SHIPPING NUEVO
+# SHIPPING
 # ==========================================
 def calculate_shipping(row):
 
@@ -97,23 +97,17 @@ def calculate_shipping(row):
         row.get("Categoria Final", "")
     ).lower()
 
-    # ======================================
-    # ACCESORIOS
-    # ======================================
+    # accesorios
     if categoria == "accessories":
 
         return 3
 
-    # ======================================
-    # ROPA
-    # ======================================
+    # ropa
     if categoria == "clothing":
 
         return 5
 
-    # ======================================
-    # ZAPATOS NIÑO
-    # ======================================
+    # zapatos niños
     if (
         categoria == "shoes"
         and "kids" in genero
@@ -121,9 +115,7 @@ def calculate_shipping(row):
 
         return 5
 
-    # ======================================
-    # ZAPATOS ADULTO
-    # ======================================
+    # zapatos adultos
     if categoria == "shoes":
 
         return 7
@@ -224,11 +216,11 @@ body {
 
     font-family: Arial, sans-serif;
 
-    background: #f4f4f4;
+    background: #f5f5f5;
 
     margin: 0;
 
-    padding: 20px;
+    padding: 30px;
 }
 
 h1 {
@@ -237,7 +229,9 @@ h1 {
 
     margin-bottom: 10px;
 
-    font-size: 52px;
+    font-size: 58px;
+
+    font-weight: bold;
 }
 
 .subtitle {
@@ -246,44 +240,63 @@ h1 {
 
     color: gray;
 
-    margin-bottom: 35px;
+    margin-bottom: 40px;
 
     font-size: 18px;
 }
 
-.filters {
+.filters-wrapper {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+    margin-bottom: 45px;
+}
+
+.filters-left,
+.filters-right {
 
     display: flex;
 
     flex-wrap: wrap;
 
     gap: 12px;
-
-    justify-content: center;
-
-    margin-bottom: 45px;
 }
 
 .filter-btn {
 
-    padding: 12px 20px;
-
-    border: 1px solid #ddd;
+    padding: 12px 22px;
 
     border-radius: 10px;
 
+    border: 1px solid #ddd;
+
     background: white;
-
-    color: black;
-
-    cursor: pointer;
 
     font-size: 14px;
 
     font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
 }
 
 .filter-btn:hover {
+
+    background: black;
+
+    color: white;
+}
+
+.filter-btn.active {
 
     background: black;
 
@@ -322,9 +335,9 @@ h1 {
 
     width: 100%;
 
-    height: 360px;
+    height: 380px;
 
-    background: #f5f5f5;
+    background: #f3f3f3;
 
     display: flex;
 
@@ -332,7 +345,7 @@ h1 {
 
     justify-content: center;
 
-    padding-bottom: 25px;
+    padding-bottom: 30px;
 }
 
 .image-container img {
@@ -346,7 +359,7 @@ h1 {
 
 .content {
 
-    padding: 22px;
+    padding: 24px;
 }
 
 .category {
@@ -355,53 +368,36 @@ h1 {
 
     color: gray;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .title {
 
-    font-size: 20px;
+    font-size: 22px;
 
     font-weight: bold;
 
-    margin-bottom: 22px;
+    line-height: 1.35;
 
-    min-height: 58px;
+    min-height: 64px;
 
-    line-height: 1.3;
+    margin-bottom: 24px;
 }
 
 .price {
 
-    font-size: 34px;
+    font-size: 42px;
 
     font-weight: bold;
-
-    color: #111;
-
-    margin-top: 10px;
 
     margin-bottom: 22px;
 }
 
 .sizes {
 
-    margin-top: 14px;
-
     font-size: 16px;
 
-    line-height: 1.7;
-}
-
-.footer {
-
-    margin-top: 80px;
-
-    text-align: center;
-
-    color: gray;
-
-    font-size: 14px;
+    line-height: 1.8;
 }
 
 .hidden {
@@ -411,11 +407,11 @@ h1 {
 
 .shipping-info {
 
-    margin-top: 60px;
+    margin-top: 70px;
 
     background: white;
 
-    border-radius: 14px;
+    border-radius: 16px;
 
     padding: 30px;
 
@@ -440,19 +436,45 @@ h1 {
 
     font-weight: bold;
 
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .shipping-price {
 
     color: green;
 
-    font-size: 28px;
+    font-size: 30px;
 
     font-weight: bold;
 }
 
+.footer {
+
+    text-align: center;
+
+    margin-top: 60px;
+
+    color: gray;
+
+    font-size: 14px;
+}
+
+@media(max-width: 768px){
+
+    h1 {
+
+        font-size: 38px;
+    }
+
+    .filters-wrapper {
+
+        flex-direction: column;
+    }
+
+}
+
 </style>
+
 </head>
 
 <body>
@@ -463,37 +485,60 @@ h1 {
 Catalogo actualizado automaticamente
 </div>
 
-<div class="filters">
+<div class="filters-wrapper">
 
-<button class="filter-btn"
-onclick="filterProducts('all')">
-ALL
-</button>
+    <div class="filters-left">
 
-<button class="filter-btn"
-onclick="filterProducts('Men')">
-MEN
-</button>
+        <button class="filter-btn active"
+        onclick="filterProducts('all', this)">
+        ALL
+        </button>
 
-<button class="filter-btn"
-onclick="filterProducts('Women')">
-WOMEN
-</button>
+        <button class="filter-btn"
+        onclick="filterProducts('Men', this)">
+        MEN
+        </button>
 
-<button class="filter-btn"
-onclick="filterProducts('Kids')">
-KIDS
-</button>
+        <button class="filter-btn"
+        onclick="filterProducts('Women', this)">
+        WOMEN
+        </button>
 
-<button class="filter-btn"
-onclick="sortProducts('asc')">
-PRECIO ↑
-</button>
+        <button class="filter-btn"
+        onclick="filterProducts('Kids', this)">
+        KIDS
+        </button>
 
-<button class="filter-btn"
-onclick="sortProducts('desc')">
-PRECIO ↓
-</button>
+        <button class="filter-btn"
+        onclick="filterCategory('Clothing', this)">
+        ROPA
+        </button>
+
+        <button class="filter-btn"
+        onclick="filterCategory('Shoes', this)">
+        ZAPATOS
+        </button>
+
+        <button class="filter-btn"
+        onclick="filterCategory('Accessories', this)">
+        ACCESORIOS
+        </button>
+
+    </div>
+
+    <div class="filters-right">
+
+        <button class="filter-btn"
+        onclick="sortProducts('asc')">
+        ⬆ PRECIO
+        </button>
+
+        <button class="filter-btn"
+        onclick="sortProducts('desc')">
+        PRECIO ⬇
+        </button>
+
+    </div>
 
 </div>
 
@@ -507,6 +552,11 @@ for _, row in df.iterrows():
 
     genero = row.get(
         "Genero",
+        ""
+    )
+
+    categoria_final = row.get(
+        "Categoria Final",
         ""
     )
 
@@ -538,6 +588,7 @@ for _, row in df.iterrows():
     card = f"""
     <div class="card"
         data-genero="{genero}"
+        data-categoria="{categoria_final}"
         data-price="{precio_venta_cop}">
 
         <div class="image-container">
@@ -571,7 +622,7 @@ for _, row in df.iterrows():
     html += card
 
 # ==========================================
-# FOOTER SHIPPING
+# JS
 # ==========================================
 html += """
 
@@ -647,7 +698,23 @@ html += """
 
 <script>
 
-function filterProducts(filter) {
+function clearButtons(){
+
+    document
+    .querySelectorAll('.filter-btn')
+    .forEach(btn => {
+
+        btn.classList.remove('active');
+
+    });
+
+}
+
+function filterProducts(filter, button) {
+
+    clearButtons();
+
+    button.classList.add('active');
 
     const cards =
     document.querySelectorAll('.card');
@@ -668,6 +735,35 @@ function filterProducts(filter) {
 
         if (
             genero === filter
+        ) {
+
+            card.classList.remove('hidden');
+
+        } else {
+
+            card.classList.add('hidden');
+        }
+
+    });
+
+}
+
+function filterCategory(filter, button){
+
+    clearButtons();
+
+    button.classList.add('active');
+
+    const cards =
+    document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+
+        const categoria =
+        card.dataset.categoria;
+
+        if (
+            categoria === filter
         ) {
 
             card.classList.remove('hidden');
@@ -721,7 +817,11 @@ function sortProducts(order) {
 </script>
 
 <div class="footer">
-Catalogo generado automaticamente
+
+Catalogo generado automaticamente<br><br>
+
+Precios en COP. Sujetos a cambios.
+
 </div>
 
 </body>
@@ -739,7 +839,7 @@ with open(
 
     f.write(html)
 
-print("\n================================")
+print("\\n================================")
 print("CATALOGO GENERADO")
 print("index.html")
 print("================================")
@@ -749,7 +849,7 @@ print("================================")
 # ==========================================
 try:
 
-    print("\n================================")
+    print("\\n================================")
     print("SUBIENDO A GITHUB")
     print("================================")
 
@@ -773,10 +873,10 @@ try:
         check=True
     )
 
-    print("\n================================")
+    print("\\n================================")
     print("CATALOGO PUBLICADO ONLINE")
     print("================================")
 
 except Exception as e:
 
-    print("\nERROR GIT:", e)
+    print("\\nERROR GIT:", e)
