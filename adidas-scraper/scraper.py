@@ -111,33 +111,23 @@ def classify_gender(nombre, subtitle, url):
     return "Unisex"
 
 # ==========================================
-# CLASIFICAR PRODUCTO
+# TEMPORAL
+# (hasta usar metadata oficial)
 # ==========================================
 def classify_product(nombre):
 
     text = str(nombre).lower()
 
-    # ======================================
-    # ACCESORIOS
-    # ======================================
     accessories_keywords = [
 
         "backpack",
-
         "bag",
-
         "cap",
-
         "hat",
-
         "sock",
-
         "bottle",
-
         "ball",
-
         "glove",
-
         "belt"
     ]
 
@@ -147,29 +137,17 @@ def classify_product(nombre):
 
             return "Accessories"
 
-    # ======================================
-    # ROPA
-    # ======================================
     clothing_keywords = [
 
         "hoodie",
-
         "pants",
-
         "shirt",
-
         "shorts",
-
         "jacket",
-
         "tee",
-
         "jersey",
-
         "tracksuit",
-
         "dress",
-
         "leggings"
     ]
 
@@ -179,9 +157,6 @@ def classify_product(nombre):
 
             return "Clothing"
 
-    # ======================================
-    # ZAPATOS
-    # ======================================
     return "Shoes"
 
 # ==========================================
@@ -193,10 +168,8 @@ def get_products_from_page(url):
 
         driver.get(url)
 
-        # Esperar carga
         time.sleep(6)
 
-        # Scroll
         driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);"
         )
@@ -207,9 +180,6 @@ def get_products_from_page(url):
 
         print("\nHTML LENGTH:", len(html))
 
-        # ==================================
-        # NEXT DATA
-        # ==================================
         match = re.search(
             r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>',
             html,
@@ -349,6 +319,15 @@ def process_product(p):
 
         sku = p.get("id", "")
 
+        # ==================================
+        # DEBUG KEYS ADIDAS
+        # ==================================
+        print("\n===================")
+        print("PRODUCT KEYS")
+        print("===================")
+
+        print(p.keys())
+
         if not sku:
 
             return None
@@ -391,7 +370,7 @@ def process_product(p):
         )
 
         # ==================================
-        # TIPO PRODUCTO
+        # TEMPORAL
         # ==================================
         categoria_final = classify_product(
             nombre
@@ -404,6 +383,28 @@ def process_product(p):
             "image",
             ""
         )
+
+        # ==================================
+        # IMAGEN HD
+        # ==================================
+        image = (
+            image
+            .replace(
+                "w_280,h_280",
+                "w_1200,h_1200"
+            )
+            .replace(
+                "w_320,h_320",
+                "w_1200,h_1200"
+            )
+            .replace(
+                "w_600",
+                "w_1200"
+            )
+        )
+
+        print("\nIMAGE HD:")
+        print(image)
 
         # ==================================
         # RATING
@@ -575,9 +576,6 @@ while True:
 
     print("\nPRODUCTOS:", len(products))
 
-    # ======================================
-    # FILTRAR DUPLICADOS
-    # ======================================
     new_products = []
 
     for p in products:
@@ -591,9 +589,6 @@ while True:
 
         new_products.append(p)
 
-    # ======================================
-    # MULTITHREADING
-    # ======================================
     with ThreadPoolExecutor(max_workers=10) as executor:
 
         results = list(
@@ -603,18 +598,12 @@ while True:
             )
         )
 
-    # ======================================
-    # SAVE RESULTS
-    # ======================================
     for result in results:
 
         if result:
 
             all_products.append(result)
 
-    # ======================================
-    # DATAFRAME TEMP
-    # ======================================
     temp_df = pd.DataFrame(all_products)
 
     temp_df.drop_duplicates(
@@ -622,9 +611,6 @@ while True:
         inplace=True
     )
 
-    # ======================================
-    # GUARDADO INCREMENTAL
-    # ======================================
     temp_df.to_excel(
         "adidas_shop_incremental.xlsx",
         index=False

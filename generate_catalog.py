@@ -18,28 +18,16 @@ df = df.fillna("")
 # ==========================================
 exclude_keywords = [
 
-    # medias
     "sock",
     "socks",
 
-    # futbol accesorios
     "shin guard",
     "shin guards",
 
-    # accesorios varios
     "ball",
     "water bottle",
     "bottle",
-    "glove",
-    "belt",
-    "headband",
-    "wristband",
 
-    # gym pequeños
-    "mat",
-    "roller",
-
-    # otros
     "keychain",
     "sticker"
 ]
@@ -54,25 +42,18 @@ df = df[
 ]
 
 # ==========================================
-# TRM FIJA
+# CONFIG
 # ==========================================
 USD_TO_COP = 3750
 
-# ==========================================
-# CONFIG
-# ==========================================
 TAX_USA = 0.07
 
-# Adidas coupon
 ADIDAS_DISCOUNT = 0.30
 
-# Ganancia maxima
 MAX_PROFIT_USD = 35
 
-# Ganancia minima
 MIN_PROFIT_USD = 15
 
-# Multiplicador
 MULTIPLIER = 1.8
 
 # ==========================================
@@ -104,22 +85,54 @@ df["Taxes USD"] = (
 )
 
 # ==========================================
-# SHIPPING
+# SHIPPING NUEVO
 # ==========================================
-def calculate_shipping(genero):
+def calculate_shipping(row):
 
-    genero = str(genero).lower()
+    genero = str(
+        row.get("Genero", "")
+    ).lower()
 
-    # niños
-    if "kids" in genero:
+    categoria = str(
+        row.get("Categoria Final", "")
+    ).lower()
+
+    # ======================================
+    # ACCESORIOS
+    # ======================================
+    if categoria == "accessories":
+
+        return 3
+
+    # ======================================
+    # ROPA
+    # ======================================
+    if categoria == "clothing":
 
         return 5
 
-    # adultos
-    return 7
+    # ======================================
+    # ZAPATOS NIÑO
+    # ======================================
+    if (
+        categoria == "shoes"
+        and "kids" in genero
+    ):
 
-df["Shipping USD"] = df["Genero"].apply(
-    calculate_shipping
+        return 5
+
+    # ======================================
+    # ZAPATOS ADULTO
+    # ======================================
+    if categoria == "shoes":
+
+        return 7
+
+    return 5
+
+df["Shipping USD"] = df.apply(
+    calculate_shipping,
+    axis=1
 )
 
 # ==========================================
@@ -139,18 +152,15 @@ df["Costo Total USD"] = (
 # ==========================================
 def calculate_profit(total_usd):
 
-    # multiplicador
     profit = (
         total_usd
         * (MULTIPLIER - 1)
     )
 
-    # minimo ganancia
     if profit < MIN_PROFIT_USD:
 
         profit = MIN_PROFIT_USD
 
-    # maximo ganancia
     if profit > MAX_PROFIT_USD:
 
         profit = MAX_PROFIT_USD
@@ -193,7 +203,7 @@ df.sort_values(
 )
 
 # ==========================================
-# HTML INICIO
+# HTML
 # ==========================================
 html = """
 <!DOCTYPE html>
@@ -226,6 +236,8 @@ h1 {
     text-align: center;
 
     margin-bottom: 10px;
+
+    font-size: 52px;
 }
 
 .subtitle {
@@ -234,7 +246,9 @@ h1 {
 
     color: gray;
 
-    margin-bottom: 30px;
+    margin-bottom: 35px;
+
+    font-size: 18px;
 }
 
 .filters {
@@ -243,33 +257,37 @@ h1 {
 
     flex-wrap: wrap;
 
-    gap: 10px;
+    gap: 12px;
 
     justify-content: center;
 
-    margin-bottom: 40px;
+    margin-bottom: 45px;
 }
 
 .filter-btn {
 
-    padding: 10px 18px;
+    padding: 12px 20px;
 
-    border: none;
+    border: 1px solid #ddd;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
-    background: black;
+    background: white;
 
-    color: white;
+    color: black;
 
     cursor: pointer;
 
     font-size: 14px;
+
+    font-weight: bold;
 }
 
 .filter-btn:hover {
 
-    opacity: 0.85;
+    background: black;
+
+    color: white;
 }
 
 .grid {
@@ -277,20 +295,20 @@ h1 {
     display: grid;
 
     grid-template-columns:
-    repeat(auto-fill, minmax(280px, 1fr));
+    repeat(auto-fill, minmax(320px, 1fr));
 
-    gap: 20px;
+    gap: 24px;
 }
 
 .card {
 
     background: white;
 
-    border-radius: 12px;
+    border-radius: 14px;
 
     overflow: hidden;
 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #e5e5e5;
 
     transition: 0.2s;
 }
@@ -304,80 +322,86 @@ h1 {
 
     width: 100%;
 
-    height: 280px;
+    height: 360px;
 
-    background: #fff;
+    background: #f5f5f5;
 
     display: flex;
 
-    align-items: center;
+    align-items: flex-end;
 
     justify-content: center;
+
+    padding-bottom: 25px;
 }
 
 .image-container img {
 
-    width: 100%;
+    width: 88%;
 
-    height: 100%;
+    height: 88%;
 
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .content {
 
-    padding: 15px;
+    padding: 22px;
 }
 
 .category {
 
-    font-size: 12px;
+    font-size: 14px;
 
     color: gray;
 
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .title {
 
-    font-size: 18px;
+    font-size: 20px;
 
     font-weight: bold;
 
-    margin-bottom: 10px;
+    margin-bottom: 22px;
 
-    min-height: 48px;
+    min-height: 58px;
+
+    line-height: 1.3;
 }
 
 .price {
 
-    font-size: 28px;
+    font-size: 34px;
 
     font-weight: bold;
 
     color: #111;
 
     margin-top: 10px;
+
+    margin-bottom: 22px;
 }
 
 .sizes {
 
-    margin-top: 12px;
+    margin-top: 14px;
 
-    font-size: 14px;
+    font-size: 16px;
 
-    line-height: 1.5;
+    line-height: 1.7;
 }
 
 .footer {
 
-    margin-top: 70px;
+    margin-top: 80px;
 
     text-align: center;
 
     color: gray;
 
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .hidden {
@@ -385,12 +409,55 @@ h1 {
     display: none;
 }
 
+.shipping-info {
+
+    margin-top: 60px;
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    display: grid;
+
+    grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 20px;
+
+    border: 1px solid #e5e5e5;
+}
+
+.shipping-card {
+
+    text-align: center;
+}
+
+.shipping-title {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.shipping-price {
+
+    color: green;
+
+    font-size: 28px;
+
+    font-weight: bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>Catalogo Adidas</h1>
+<h1>CATALOGO ADIDAS</h1>
 
 <div class="subtitle">
 Catalogo actualizado automaticamente
@@ -504,9 +571,77 @@ for _, row in df.iterrows():
     html += card
 
 # ==========================================
-# JS
+# FOOTER SHIPPING
 # ==========================================
 html += """
+
+</div>
+
+<div class="shipping-info">
+
+    <div class="shipping-card">
+
+        <div class="shipping-title">
+            ACCESORIOS
+        </div>
+
+        <div>
+            Envio
+        </div>
+
+        <div class="shipping-price">
+            $3 USD
+        </div>
+
+    </div>
+
+    <div class="shipping-card">
+
+        <div class="shipping-title">
+            ZAPATOS KIDS
+        </div>
+
+        <div>
+            Envio
+        </div>
+
+        <div class="shipping-price">
+            $5 USD
+        </div>
+
+    </div>
+
+    <div class="shipping-card">
+
+        <div class="shipping-title">
+            ROPA
+        </div>
+
+        <div>
+            Envio
+        </div>
+
+        <div class="shipping-price">
+            $5 USD
+        </div>
+
+    </div>
+
+    <div class="shipping-card">
+
+        <div class="shipping-title">
+            ZAPATOS MEN / WOMEN
+        </div>
+
+        <div>
+            Envio
+        </div>
+
+        <div class="shipping-price">
+            $7 USD
+        </div>
+
+    </div>
 
 </div>
 
