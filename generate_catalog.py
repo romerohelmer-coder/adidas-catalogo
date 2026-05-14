@@ -1,5 +1,5 @@
 import pandas as pd
-import math
+import subprocess
 
 # ==========================================
 # LEER EXCEL
@@ -54,18 +54,6 @@ df = df[
 ]
 
 # ==========================================
-# SOLO CATEGORIAS PRINCIPALES
-# ==========================================
-df = df[
-    df["Categoria Final"]
-    .isin([
-        "Shoes",
-        "Clothing",
-        "Accessories"
-    ])
-]
-
-# ==========================================
 # TRM FIJA
 # ==========================================
 USD_TO_COP = 3750
@@ -75,102 +63,115 @@ USD_TO_COP = 3750
 # ==========================================
 TAX_USA = 0.07
 
-COSTO_LIBRA_USD = 2.1
+# Adidas coupon
+ADIDAS_DISCOUNT = 0.30
 
-MARGEN = 1.1
-
-# ==========================================
-# PESO ESTIMADO
-# ==========================================
-def estimate_weight(row):
-
-    tipo = row.get(
-        "Categoria Final",
-        ""
-    )
-
-    nombre = str(
-        row.get("Nombre", "")
-    ).lower()
-
-    if tipo == "Shoes":
-
-        if (
-            "kids" in nombre
-            or "child" in nombre
-            or "infant" in nombre
-        ):
-
-            return 2
-
-        return 3
-
-    return 2
+# Tope ganancia
+MAX_PROFIT_USD = 35
 
 # ==========================================
-# PESO
+# LIMPIAR PRECIO
 # ==========================================
-df["Peso LB"] = df.apply(
-    estimate_weight,
-    axis=1
+df["Precio"] = pd.to_numeric(
+    df["Precio"],
+    errors="coerce"
 )
 
-# ==========================================
-# COBRO CASILLERO
-# ==========================================
-df["Peso Cobrado"] = (
-    df["Peso LB"]
-    .apply(lambda x: max(2, math.ceil(x)))
-)
+df = df[
+    df["Precio"].notnull()
+]
 
 # ==========================================
-# SHIPPING USD
+# DESCUENTO ADIDAS
 # ==========================================
-df["Shipping USD"] = (
-    df["Peso Cobrado"]
-    * COSTO_LIBRA_USD
+df["Precio Descuento USD"] = (
+    df["Precio"]
+    * (1 - ADIDAS_DISCOUNT)
 )
 
 # ==========================================
 # TAXES USA
 # ==========================================
 df["Taxes USD"] = (
-    df["Precio"] * TAX_USA
+    df["Precio Descuento USD"]
+    * TAX_USA
+)
+
+# ==========================================
+# SHIPPING
+# ==========================================
+def calculate_shipping(genero):
+
+    genero = str(genero).lower()
+
+    # niños
+    if "kids" in genero:
+
+        return 5
+
+    # adultos
+    return 7
+
+df["Shipping USD"] = df["Genero"].apply(
+    calculate_shipping
 )
 
 # ==========================================
 # COSTO TOTAL USD
 # ==========================================
 df["Costo Total USD"] = (
-    df["Precio"]
+
+    df["Precio Descuento USD"]
+
     + df["Taxes USD"]
+
     + df["Shipping USD"]
 )
 
 # ==========================================
-# COSTO COP
+# GANANCIA
 # ==========================================
-df["Costo COP"] = (
+def calculate_profit(total_usd):
+
+    profit = total_usd
+
+    if profit > MAX_PROFIT_USD:
+
+        profit = MAX_PROFIT_USD
+
+    return profit
+
+df["Ganancia USD"] = (
     df["Costo Total USD"]
-    * USD_TO_COP
+    .apply(calculate_profit)
 )
 
 # ==========================================
-# PRECIO VENTA COP
+# PRECIO FINAL USD
+# ==========================================
+df["Precio Final USD"] = (
+
+    df["Costo Total USD"]
+
+    + df["Ganancia USD"]
+)
+
+# ==========================================
+# PRECIO FINAL COP
 # ==========================================
 df["Precio Venta COP"] = (
-    df["Costo COP"] * MARGEN
+
+    df["Precio Final USD"]
+
+    * USD_TO_COP
+
 ).round(-3)
 
 # ==========================================
 # ORDENAR
 # ==========================================
 df.sort_values(
-    by=[
-        "Genero",
-        "Categoria Final",
-        "Precio Venta COP"
-    ],
+    by="Precio Venta COP",
     ascending=True,
     inplace=True
 )
@@ -402,23 +403,18 @@ KIDS
 </button>
 
 <button class="filter-btn"
-onclick="filterProducts('Shoes')">
-SHOES
+onclick="sortProducts('asc')">
+PRECIO ↑
 </button>
 
 <button class="filter-btn"
-onclick="filterProducts('Clothing')">
-CLOTHING
-</button>
-
-<button class="filter-btn"
-onclick="filterProducts('Accessories')">
-ACCESSORIES
+onclick="sortProducts('desc')">
+PRECIO ↓
 </button>
 
 </div>
 
-<div class="grid">
+<div class="grid" id="productGrid">
 """
 
 # ==========================================
@@ -428,11 +424,6 @@ for _, row in df.iterrows():
 
     genero = row.get(
         "Genero",
-        ""
-    )
-
-    categoria_final = row.get(
-        "Categoria Final",
         ""
     )
 
@@ -464,7 +455,7 @@ for _, row in df.iterrows():
     card = f"""
     <div class="card"
         data-genero="{genero}"
-        data-tipo="{categoria_final}">
+        data-price="{precio_venta_cop}">
 
         <div class="image-container">
             <img src="{imagen}" alt="{nombre}">
@@ -497,7 +488,7 @@ for _, row in df.iterrows():
     html += card
 
 # ==========================================
-# JS FILTROS
+# JS
 # ==========================================
 html += """
 
@@ -515,9 +506,6 @@ function filterProducts(filter) {
         const genero =
         card.dataset.genero;
 
-        const tipo =
-        card.dataset.tipo;
-
         if (
             filter === 'all'
         ) {
@@ -529,8 +517,6 @@ function filterProducts(filter) {
 
         if (
             genero === filter
-            ||
-            tipo === filter
         ) {
 
             card.classList.remove('hidden');
@@ -539,6 +525,43 @@ function filterProducts(filter) {
 
             card.classList.add('hidden');
         }
+
+    });
+
+}
+
+function sortProducts(order) {
+
+    const grid =
+    document.getElementById('productGrid');
+
+    const cards =
+    Array.from(
+        document.querySelectorAll('.card')
+    );
+
+    cards.sort((a, b) => {
+
+        const priceA =
+        parseFloat(a.dataset.price);
+
+        const priceB =
+        parseFloat(b.dataset.price);
+
+        if (order === 'asc') {
+
+            return priceA - priceB;
+
+        } else {
+
+            return priceB - priceA;
+        }
+
+    });
+
+    cards.forEach(card => {
+
+        grid.appendChild(card);
 
     });
 
@@ -569,3 +592,40 @@ print("\n================================")
 print("CATALOGO GENERADO")
 print("index.html")
 print("================================")
+
+# ==========================================
+# AUTO GIT PUSH
+# ==========================================
+try:
+
+    print("\n================================")
+    print("SUBIENDO A GITHUB")
+    print("================================")
+
+    subprocess.run(
+        ["git", "add", "."],
+        check=True
+    )
+
+    subprocess.run(
+        [
+            "git",
+            "commit",
+            "-m",
+            "catalogo auto update"
+        ],
+        check=False
+    )
+
+    subprocess.run(
+        ["git", "push"],
+        check=True
+    )
+
+    print("\n================================")
+    print("CATALOGO PUBLICADO ONLINE")
+    print("================================")
+
+except Exception as e:
+
+    print("\nERROR GIT:", e)
