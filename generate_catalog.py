@@ -788,10 +788,6 @@ body {{
 
 </div>
 
-☰
-
-</button>
-
 <div class="catalog-layout">
 
     <div class="sidebar"
