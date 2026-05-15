@@ -75,7 +75,7 @@ USD_TO_COP = 3750
 TAX_USA = 0.07
 ADIDAS_DISCOUNT = 0.30
 
-MAX_PROFIT_USD = 35
+MAX_PROFIT_USD = 34
 MIN_PROFIT_USD = 15
 
 MULTIPLIER = 1.7
@@ -660,8 +660,38 @@ body {{
 
 @media(max-width:768px){{
 
+    body {{
+        padding: 12px;
+    }}
+
     .catalog-layout {{
         flex-direction: column;
+    }}
+
+    .menu-wrapper {{
+
+        position: sticky;
+
+        top: 70px;
+
+        z-index: 1200;
+
+        padding-bottom: 10px;
+    }}
+
+    .menu-btn {{
+
+        width: 100%;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        font-size: 15px;
+
+        padding: 14px;
     }}
 
     .sidebar {{
@@ -670,9 +700,30 @@ body {{
 
         min-width: 100%;
 
-        position: relative;
+        position: fixed;
 
-        top: 0;
+        left: 0;
+
+        bottom: 0;
+
+        top: auto;
+
+        z-index: 3000;
+
+        border-radius: 24px 24px 0 0;
+
+        max-height: 72vh;
+
+        overflow-y: auto;
+
+        padding: 18px;
+
+        box-shadow:
+        0 -8px 30px rgba(0,0,0,0.18);
+    }}
+
+    .sidebar.mobile-open {{
+        display: block;
     }}
 
     .grid {{
@@ -680,24 +731,65 @@ body {{
         grid-template-columns:
         repeat(2, 1fr);
 
-        gap: 12px;
+        gap: 10px;
     }}
 
     .image-container {{
-        height: 210px;
+        height: 180px;
     }}
 
     .title {{
-        font-size: 14px;
-        min-height: 42px;
+
+        font-size: 13px;
+
+        min-height: 38px;
+
+        margin-bottom: 12px;
     }}
 
     .price {{
-        font-size: 22px;
+        font-size: 20px;
     }}
 
     .content {{
-        padding: 14px;
+        padding: 12px;
+    }}
+
+    .buy-btn {{
+
+        padding: 12px;
+
+        font-size: 13px;
+    }}
+
+    .size-option {{
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding: 12px;
+
+        border-radius: 12px;
+
+        background: #f8f4ec;
+
+        margin-bottom: 10px;
+
+        font-size: 15px;
+
+        font-weight: 500;
+    }}
+
+    .size-option input {{
+
+        width: 18px;
+
+        height: 18px;
+
+        accent-color: #b9975b;
     }}
 }}
 
@@ -714,7 +806,7 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        Catalogo Adidas
+        CATÁLOGO DE ADIDAS
     </div>
 
 </div>
@@ -787,10 +879,6 @@ body {{
     </button>
 
 </div>
-
-☰
-
-</button>
 
 <div class="catalog-layout">
 
@@ -1029,6 +1117,8 @@ function buildSizeFilters(sizes){
     document.getElementById('sizeFilters');
 
     container.innerHTML = '';
+
+    updateSelectedSizeLabel();
 
     // ======================================
     // SCROLL INTERNO
@@ -1309,11 +1399,15 @@ function appendSizeOption(container, size){
 
 function toggleSize(checkbox){
 
-    const value = checkbox.value;
+    const value =
+    checkbox.value;
 
     if(checkbox.checked){
 
-        if(!selectedSizes.includes(value)){
+        if(
+            !selectedSizes.includes(value)
+        ){
+
             selectedSizes.push(value);
         }
 
@@ -1325,16 +1419,54 @@ function toggleSize(checkbox){
         );
     }
 
+    updateSelectedSizeLabel();
+
     refreshProducts();
-
-    window.scrollTo({{
-
-        top: 0,
-
-        behavior: 'smooth'
-    }});
 }
+function updateSelectedSizeLabel(){
 
+    let label =
+    document.getElementById(
+        'selectedSizeLabel'
+    );
+
+    if(!label){
+
+        label =
+        document.createElement('div');
+
+        label.id =
+        'selectedSizeLabel';
+
+        label.style.marginBottom =
+        '14px';
+
+        label.style.fontWeight =
+        'bold';
+
+        label.style.color =
+        '#8a6b2f';
+
+        const sidebar =
+        document.getElementById(
+            'sizeFilters'
+        );
+
+        sidebar.prepend(label);
+    }
+
+    if(selectedSizes.length > 0){
+
+        label.innerHTML =
+        'TALLAS: ' +
+        selectedSizes.join(', ');
+
+    } else {
+
+        label.innerHTML =
+        'Selecciona una o más tallas';
+    }
+}
 function toggleSidebarMenu(){
 
     const sidebar =
@@ -1389,6 +1521,13 @@ function setCategory(category, button){
     button.classList.add('active');
 
     refreshProducts();
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: 'smooth'
+    });
 }
 
 function sortProducts(order){
