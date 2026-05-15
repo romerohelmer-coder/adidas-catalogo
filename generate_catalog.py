@@ -714,7 +714,7 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        Catalogo Adidas
+        CATÁLOGO DE ADIDAS
     </div>
 
 </div>
