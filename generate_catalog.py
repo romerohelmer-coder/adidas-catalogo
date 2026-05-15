@@ -69,6 +69,51 @@ df = df[
 ]
 
 # ==========================================
+# AJUSTAR CATEGORIAS
+# ==========================================
+def adjust_category(row):
+
+    categoria = str(
+        row.get("Categoria Final", "")
+    )
+
+    genero = str(
+        row.get("Genero", "")
+    ).lower()
+
+    tallas = str(
+        row.get("Tallas", "")
+    ).lower()
+
+    nombre = str(
+        row.get("Nombre", "")
+    ).lower()
+
+    # ======================================
+    # ONE SIZE = ACCESSORIES
+    # ======================================
+    if "one size" in tallas:
+
+        return "Accessories"
+
+    # ======================================
+    # UNISEX + CLOTHING
+    # ======================================
+    if (
+        genero == "unisex"
+        and categoria == "Clothing"
+    ):
+
+        return "Accessories"
+
+    return categoria
+
+df["Categoria Final"] = df.apply(
+    adjust_category,
+    axis=1
+)
+
+# ==========================================
 # DESCUENTO ADIDAS
 # ==========================================
 df["Precio Descuento USD"] = (
@@ -97,17 +142,37 @@ def calculate_shipping(row):
         row.get("Categoria Final", "")
     ).lower()
 
-    # accesorios
+    nombre = str(
+        row.get("Nombre", "")
+    ).lower()
+
+    # ======================================
+    # ACCESSORIES
+    # ======================================
     if categoria == "accessories":
 
         return 3
 
-    # ropa
+    # ======================================
+    # SLIDES
+    # ======================================
+    if (
+        categoria == "shoes"
+        and "slides" in nombre
+    ):
+
+        return 5
+
+    # ======================================
+    # ROPA
+    # ======================================
     if categoria == "clothing":
 
         return 5
 
-    # zapatos niños
+    # ======================================
+    # ZAPATOS KIDS
+    # ======================================
     if (
         categoria == "shoes"
         and "kids" in genero
@@ -115,7 +180,9 @@ def calculate_shipping(row):
 
         return 5
 
-    # zapatos adultos
+    # ======================================
+    # ZAPATOS ADULTOS
+    # ======================================
     if categoria == "shoes":
 
         return 7
@@ -598,7 +665,7 @@ for _, row in df.iterrows():
         <div class="content">
 
             <div class="category">
-                {genero} | {categoria}
+                {genero} | {categoria_final}
             </div>
 
             <div class="title">
@@ -625,74 +692,6 @@ for _, row in df.iterrows():
 # JS
 # ==========================================
 html += """
-
-</div>
-
-<div class="shipping-info">
-
-    <div class="shipping-card">
-
-        <div class="shipping-title">
-            ACCESORIOS
-        </div>
-
-        <div>
-            Envio
-        </div>
-
-        <div class="shipping-price">
-            $3 USD
-        </div>
-
-    </div>
-
-    <div class="shipping-card">
-
-        <div class="shipping-title">
-            ZAPATOS KIDS
-        </div>
-
-        <div>
-            Envio
-        </div>
-
-        <div class="shipping-price">
-            $5 USD
-        </div>
-
-    </div>
-
-    <div class="shipping-card">
-
-        <div class="shipping-title">
-            ROPA
-        </div>
-
-        <div>
-            Envio
-        </div>
-
-        <div class="shipping-price">
-            $5 USD
-        </div>
-
-    </div>
-
-    <div class="shipping-card">
-
-        <div class="shipping-title">
-            ZAPATOS MEN / WOMEN
-        </div>
-
-        <div>
-            Envio
-        </div>
-
-        <div class="shipping-price">
-            $7 USD
-        </div>
-
-    </div>
 
 </div>
 
