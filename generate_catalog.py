@@ -25,7 +25,7 @@ df = df[
 ]
 
 # ==========================================
-# FILTRAR PRODUCTOS NO DESEADOS
+# FILTROS PRODUCTOS
 # ==========================================
 exclude_keywords = [
 
@@ -45,9 +45,6 @@ exclude_keywords = [
     "sticker"
 ]
 
-# ==========================================
-# FILTRO AVANZADO
-# ==========================================
 df = df[
     ~df["Nombre"]
     .astype(str)
@@ -60,20 +57,7 @@ df = df[
 ]
 
 # ==========================================
-# ELIMINAR CUSHIONED
-# ==========================================
-df = df[
-    ~df["Nombre"]
-    .astype(str)
-    .str.contains(
-        "Cushioned",
-        case=False,
-        na=False
-    )
-]
-
-# ==========================================
-# LOGO BASE64
+# LOGO
 # ==========================================
 with open(
     "logo.jpg",
@@ -100,7 +84,7 @@ MIN_PROFIT_USD = 15
 MULTIPLIER = 1.7
 
 # ==========================================
-# LIMPIAR PRECIO
+# PRECIO NUMERICO
 # ==========================================
 df["Precio"] = pd.to_numeric(
     df["Precio"],
@@ -129,14 +113,12 @@ def adjust_category(row):
     ).lower()
 
     if "one size" in tallas:
-
         return "Accessories"
 
     if (
         genero == "unisex"
         and categoria == "Clothing"
     ):
-
         return "Accessories"
 
     return categoria
@@ -147,7 +129,7 @@ df["Categoria Final"] = df.apply(
 )
 
 # ==========================================
-# DESCUENTO ADIDAS
+# DESCUENTO
 # ==========================================
 df["Precio Descuento USD"] = (
     df["Precio"]
@@ -155,7 +137,7 @@ df["Precio Descuento USD"] = (
 )
 
 # ==========================================
-# TAXES USA
+# TAXES
 # ==========================================
 df["Taxes USD"] = (
     df["Precio Descuento USD"]
@@ -180,29 +162,24 @@ def calculate_shipping(row):
     ).lower()
 
     if categoria == "accessories":
-
         return 3
 
     if (
         categoria == "shoes"
         and "slides" in nombre
     ):
-
         return 5
 
     if categoria == "clothing":
-
         return 5
 
     if (
         categoria == "shoes"
         and "kids" in genero
     ):
-
         return 5
 
     if categoria == "shoes":
-
         return 7
 
     return 5
@@ -213,7 +190,7 @@ df["Shipping USD"] = df.apply(
 )
 
 # ==========================================
-# COSTO TOTAL USD
+# COSTO TOTAL
 # ==========================================
 df["Costo Total USD"] = (
 
@@ -235,11 +212,9 @@ def calculate_profit(total_usd):
     )
 
     if profit < MIN_PROFIT_USD:
-
         profit = MIN_PROFIT_USD
 
     if profit > MAX_PROFIT_USD:
-
         profit = MAX_PROFIT_USD
 
     return profit
@@ -250,7 +225,7 @@ df["Ganancia USD"] = (
 )
 
 # ==========================================
-# PRECIO FINAL
+# PRECIO FINAL USD
 # ==========================================
 df["Precio Final USD"] = (
 
@@ -260,7 +235,7 @@ df["Precio Final USD"] = (
 )
 
 # ==========================================
-# FILTRO SLIDES > 42 USD
+# FILTRO SLIDES
 # ==========================================
 df = df[
     ~(
@@ -302,6 +277,7 @@ df.sort_values(
 # HTML
 # ==========================================
 html = f"""
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -312,7 +288,7 @@ html = f"""
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Saroma Store</title>
+<title>Catalogo Adidas</title>
 
 <style>
 
@@ -329,7 +305,7 @@ body {{
 
     margin: 0;
 
-    padding: 30px;
+    padding: 20px;
 
     color: #2d2d2d;
 }}
@@ -343,24 +319,18 @@ body {{
 
 .logo {{
 
-    width: 260px;
+    width: 240px;
 
     max-width: 80%;
-
-    opacity: 0.96;
-
-    margin-bottom: 12px;
 }}
 
 .subtitle {{
 
     color: #8a7a55;
 
-    font-size: 16px;
+    margin-top: 10px;
 
-    letter-spacing: 1px;
-
-    margin-bottom: 35px;
+    font-size: 15px;
 }}
 
 .filters-sticky {{
@@ -372,18 +342,13 @@ body {{
     z-index: 999;
 
     background:
-    rgba(249,246,239,0.96);
+    rgba(249,246,239,0.95);
 
     backdrop-filter: blur(10px);
 
-    padding-top: 14px;
+    padding: 12px 0;
 
-    padding-bottom: 18px;
-
-    border-bottom:
-    1px solid #e9dfcb;
-
-    margin-bottom: 35px;
+    margin-bottom: 25px;
 }}
 
 .main-filters,
@@ -393,19 +358,18 @@ body {{
 
     justify-content: center;
 
-    gap: 14px;
+    gap: 12px;
 
     flex-wrap: wrap;
 }}
 
 .main-filters {{
-
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }}
 
 .filter-btn {{
 
-    padding: 12px 24px;
+    padding: 10px 18px;
 
     border-radius: 30px;
 
@@ -415,20 +379,9 @@ body {{
 
     color: #8a6b2f;
 
-    font-size: 14px;
-
     font-weight: bold;
 
     cursor: pointer;
-
-    transition: 0.25s;
-}}
-
-.filter-btn:hover {{
-
-    background: #b9975b;
-
-    color: white;
 }}
 
 .filter-btn.active {{
@@ -436,8 +389,70 @@ body {{
     background: #b9975b;
 
     color: white;
+}}
 
-    border-color: #b9975b;
+.catalog-layout {{
+
+    display: flex;
+
+    gap: 24px;
+
+    align-items: flex-start;
+}}
+
+.sidebar {{
+
+    width: 220px;
+
+    min-width: 220px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    box-shadow:
+    0 6px 18px rgba(0,0,0,0.05);
+
+    position: sticky;
+
+    top: 120px;
+
+    height: fit-content;
+}}
+
+.sidebar.hidden-sidebar {{
+
+    display: none;
+}}
+
+.sidebar-title {{
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 18px;
+
+    color: #8a6b2f;
+}}
+
+.size-option {{
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    cursor: pointer;
+}}
+
+.size-option input {{
+    margin-right: 8px;
+}}
+
+.main-content {{
+    flex: 1;
 }}
 
 .grid {{
@@ -447,39 +462,26 @@ body {{
     grid-template-columns:
     repeat(auto-fill, minmax(320px, 1fr));
 
-    gap: 26px;
+    gap: 24px;
 }}
 
 .card {{
 
     background: white;
 
-    border-radius: 24px;
+    border-radius: 22px;
 
     overflow: hidden;
 
-    border:
-    1px solid #eadfcb;
-
-    transition: 0.25s;
-
     box-shadow:
-    0 8px 25px rgba(0,0,0,0.04);
-}}
-
-.card:hover {{
-
-    transform: translateY(-5px);
-
-    box-shadow:
-    0 14px 34px rgba(0,0,0,0.08);
+    0 8px 20px rgba(0,0,0,0.05);
 }}
 
 .image-container {{
 
     width: 100%;
 
-    height: 380px;
+    height: 360px;
 
     background:
     linear-gradient(
@@ -494,7 +496,7 @@ body {{
 
     justify-content: center;
 
-    padding-bottom: 26px;
+    padding-bottom: 20px;
 }}
 
 .image-container img {{
@@ -507,52 +509,47 @@ body {{
 }}
 
 .content {{
-
-    padding: 26px;
+    padding: 22px;
 }}
 
 .category {{
 
     font-size: 13px;
 
-    color: #9a8762;
+    color: #8a7a55;
 
     margin-bottom: 12px;
 }}
 
 .title {{
 
-    font-size: 22px;
+    font-size: 21px;
 
     font-weight: bold;
 
     line-height: 1.35;
 
-    min-height: 64px;
+    min-height: 62px;
 
-    margin-bottom: 24px;
-
-    color: #2b2b2b;
+    margin-bottom: 20px;
 }}
 
 .price {{
 
-    font-size: 40px;
+    font-size: 36px;
 
     font-weight: bold;
 
-    margin-bottom: 20px;
-
     color: #9a6f20;
+
+    margin-bottom: 16px;
 }}
 
 .sizes {{
 
-    font-size: 15px;
+    font-size: 14px;
 
     line-height: 1.8;
-
-    color: #444;
 }}
 
 .buy-btn {{
@@ -574,42 +571,31 @@ body {{
     border-radius: 14px;
 
     font-weight: bold;
-
-    transition: 0.25s;
-}}
-
-.buy-btn:hover {{
-
-    background: #9d7d42;
 }}
 
 .hidden {{
-
     display: none;
 }}
 
-.footer {{
+@media(max-width:768px){{
 
-    text-align: center;
-
-    margin-top: 70px;
-
-    color: #9a8762;
-
-    font-size: 13px;
-}}
-
-@media(max-width: 768px){{
-
-    body {{
-        padding: 12px;
+    .catalog-layout {{
+        flex-direction: column;
     }}
 
-    .logo {{
-        width: 170px;
+    .sidebar {{
+
+        width: 100%;
+
+        min-width: 100%;
+
+        position: relative;
+
+        top: 0;
     }}
 
     .grid {{
+
         grid-template-columns:
         repeat(2, 1fr);
 
@@ -617,12 +603,11 @@ body {{
     }}
 
     .image-container {{
-        height: 220px;
+        height: 210px;
     }}
 
     .title {{
-        font-size: 15px;
-
+        font-size: 14px;
         min-height: 42px;
     }}
 
@@ -630,6 +615,9 @@ body {{
         font-size: 22px;
     }}
 
+    .content {{
+        padding: 14px;
+    }}
 }}
 
 </style>
@@ -707,7 +695,23 @@ body {{
 
 </div>
 
-<div class="grid" id="productGrid">
+<div class="catalog-layout">
+
+    <div class="sidebar hidden-sidebar"
+    id="sizeSidebar">
+
+        <div class="sidebar-title">
+            FILTRAR TALLAS
+        </div>
+
+        <div id="sizeFilters"></div>
+
+    </div>
+
+    <div class="main-content">
+
+        <div class="grid" id="productGrid">
+
 """
 
 # ==========================================
@@ -738,18 +742,26 @@ Imagen:
 '''
 
     whatsapp_text = whatsapp_text.replace(
-        "\\n",
+        "\n",
         "%0A"
     )
 
-    card = f"""
+    html += f"""
+
     <div class="card"
+
         data-genero="{genero}"
+
         data-categoria="{categoria_final}"
-        data-price="{precio_venta_cop}">
+
+        data-price="{precio_venta_cop}"
+
+        data-sizes="{tallas}">
 
         <div class="image-container">
-            <img src="{imagen}" alt="{nombre}">
+
+            <img src="{imagen}">
+
         </div>
 
         <div class="content">
@@ -767,8 +779,11 @@ Imagen:
             </div>
 
             <div class="sizes">
+
                 <strong>Tallas:</strong><br>
+
                 {tallas}
+
             </div>
 
             <a
@@ -783,11 +798,17 @@ Imagen:
         </div>
 
     </div>
-    """
 
-    html += card
+"""
 
+# ==========================================
+# SCRIPT
+# ==========================================
 html += """
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -795,11 +816,14 @@ html += """
 
 let currentGender = 'all';
 let currentCategory = 'Shoes';
+let selectedSizes = [];
 
 function refreshProducts(){
 
     const cards =
     document.querySelectorAll('.card');
+
+    let availableSizes = [];
 
     cards.forEach(card => {
 
@@ -808,6 +832,9 @@ function refreshProducts(){
 
         const categoria =
         card.dataset.categoria;
+
+        const sizes =
+        card.dataset.sizes || '';
 
         let show = true;
 
@@ -826,6 +853,70 @@ function refreshProducts(){
         }
 
         if(show){
+
+            sizes
+            .split(',')
+            .forEach(size => {
+
+                const clean = size.trim();
+
+                if(
+                    clean !== ''
+                    &&
+                    !availableSizes.includes(clean)
+                ){
+                    availableSizes.push(clean);
+                }
+
+            });
+        }
+
+    });
+
+    buildSizeFilters(availableSizes);
+
+    cards.forEach(card => {
+
+        const genero =
+        card.dataset.genero;
+
+        const categoria =
+        card.dataset.categoria;
+
+        const sizes =
+        (card.dataset.sizes || '')
+        .split(',')
+        .map(x => x.trim());
+
+        let show = true;
+
+        if(
+            currentGender !== 'all'
+            &&
+            genero !== currentGender
+        ){
+            show = false;
+        }
+
+        if(
+            categoria !== currentCategory
+        ){
+            show = false;
+        }
+
+        if(selectedSizes.length > 0){
+
+            const hasSize =
+            selectedSizes.some(size =>
+                sizes.includes(size)
+            );
+
+            if(!hasSize){
+                show = false;
+            }
+        }
+
+        if(show){
             card.classList.remove('hidden');
         } else {
             card.classList.add('hidden');
@@ -833,56 +924,135 @@ function refreshProducts(){
 
     });
 
+    toggleSidebar();
+}
+
+function buildSizeFilters(sizes){
+
+    const container =
+    document.getElementById('sizeFilters');
+
+    container.innerHTML = '';
+
+    sizes.sort((a,b) =>
+        a.localeCompare(b)
+    );
+
+    sizes.forEach(size => {
+
+        const item =
+        document.createElement('label');
+
+        item.className =
+        'size-option';
+
+        item.innerHTML = `
+            <input
+                type="checkbox"
+                value="${size}"
+                onchange="toggleSize(this)">
+            ${size}
+        `;
+
+        container.appendChild(item);
+
+    });
+}
+
+function toggleSize(checkbox){
+
+    const value = checkbox.value;
+
+    if(checkbox.checked){
+
+        if(!selectedSizes.includes(value)){
+            selectedSizes.push(value);
+        }
+
+    } else {
+
+        selectedSizes =
+        selectedSizes.filter(
+            x => x !== value
+        );
+    }
+
+    refreshProducts();
+}
+
+function toggleSidebar(){
+
+    const sidebar =
+    document.getElementById('sizeSidebar');
+
+    if(currentGender === 'all'){
+
+        sidebar.classList.add(
+            'hidden-sidebar'
+        );
+
+    } else {
+
+        sidebar.classList.remove(
+            'hidden-sidebar'
+        );
+    }
 }
 
 function clearMainButtons(){
 
     document
-    .querySelectorAll('.main-filters .filter-btn')
+    .querySelectorAll(
+        '.main-filters .filter-btn'
+    )
     .forEach(btn => {
         btn.classList.remove('active');
     });
-
 }
 
 function clearSubButtons(){
 
     document
-    .querySelectorAll('.sub-filters .filter-btn')
+    .querySelectorAll(
+        '.sub-filters .filter-btn'
+    )
     .forEach(btn => {
         btn.classList.remove('active');
     });
-
 }
 
 function setGender(gender, button){
 
     currentGender = gender;
 
+    selectedSizes = [];
+
     clearMainButtons();
 
     button.classList.add('active');
 
     refreshProducts();
-
 }
 
 function setCategory(category, button){
 
     currentCategory = category;
 
+    selectedSizes = [];
+
     clearSubButtons();
 
     button.classList.add('active');
 
     refreshProducts();
-
 }
 
 function sortProducts(order){
 
     const grid =
-    document.getElementById('productGrid');
+    document.getElementById(
+        'productGrid'
+    );
 
     const cards =
     Array.from(
@@ -908,22 +1078,15 @@ function sortProducts(order){
     cards.forEach(card => {
         grid.appendChild(card);
     });
-
 }
 
 refreshProducts();
 
 </script>
 
-<div class="footer">
-
-Saroma Store © 2026<br>
-Catalogo Adidas
-
-</div>
-
 </body>
 </html>
+
 """
 
 # ==========================================
@@ -937,19 +1100,12 @@ with open(
 
     f.write(html)
 
-print("\\n================================")
 print("CATALOGO GENERADO")
-print("index.html")
-print("================================")
 
 # ==========================================
-# AUTO GIT PUSH
+# SUBIR A GITHUB
 # ==========================================
 try:
-
-    print("\\n================================")
-    print("SUBIENDO A GITHUB")
-    print("================================")
 
     subprocess.run(
         ["git", "add", "."],
@@ -971,10 +1127,8 @@ try:
         check=True
     )
 
-    print("\\n================================")
-    print("CATALOGO PUBLICADO ONLINE")
-    print("================================")
+    print("CATALOGO PUBLICADO")
 
 except Exception as e:
 
-    print("\\nERROR GIT:", e)
+    print("ERROR:", e)
