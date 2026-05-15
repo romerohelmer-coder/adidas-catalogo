@@ -89,16 +89,12 @@ def adjust_category(row):
         row.get("Nombre", "")
     ).lower()
 
-    # ======================================
     # ONE SIZE = ACCESSORIES
-    # ======================================
     if "one size" in tallas:
 
         return "Accessories"
 
-    # ======================================
-    # UNISEX + CLOTHING
-    # ======================================
+    # UNISEX + CLOTHING = ACCESSORIES
     if (
         genero == "unisex"
         and categoria == "Clothing"
@@ -146,16 +142,12 @@ def calculate_shipping(row):
         row.get("Nombre", "")
     ).lower()
 
-    # ======================================
     # ACCESSORIES
-    # ======================================
     if categoria == "accessories":
 
         return 3
 
-    # ======================================
     # SLIDES
-    # ======================================
     if (
         categoria == "shoes"
         and "slides" in nombre
@@ -163,16 +155,12 @@ def calculate_shipping(row):
 
         return 5
 
-    # ======================================
-    # ROPA
-    # ======================================
+    # CLOTHING
     if categoria == "clothing":
 
         return 5
 
-    # ======================================
-    # ZAPATOS KIDS
-    # ======================================
+    # SHOES KIDS
     if (
         categoria == "shoes"
         and "kids" in genero
@@ -180,9 +168,7 @@ def calculate_shipping(row):
 
         return 5
 
-    # ======================================
-    # ZAPATOS ADULTOS
-    # ======================================
+    # SHOES ADULT
     if categoria == "shoes":
 
         return 7
@@ -312,42 +298,43 @@ h1 {
     font-size: 18px;
 }
 
-.filters-wrapper {
+.main-filters {
 
     display: flex;
 
-    justify-content: space-between;
+    justify-content: center;
 
-    align-items: center;
+    gap: 16px;
 
     flex-wrap: wrap;
 
-    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.sub-filters {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 14px;
+
+    flex-wrap: wrap;
 
     margin-bottom: 45px;
 }
 
-.filters-left,
-.filters-right {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 12px;
-}
-
 .filter-btn {
 
-    padding: 12px 22px;
+    padding: 12px 24px;
 
-    border-radius: 10px;
+    border-radius: 12px;
 
     border: 1px solid #ddd;
 
     background: white;
 
-    font-size: 14px;
+    font-size: 15px;
 
     font-weight: bold;
 
@@ -472,49 +459,6 @@ h1 {
     display: none;
 }
 
-.shipping-info {
-
-    margin-top: 70px;
-
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 30px;
-
-    display: grid;
-
-    grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
-
-    gap: 20px;
-
-    border: 1px solid #e5e5e5;
-}
-
-.shipping-card {
-
-    text-align: center;
-}
-
-.shipping-title {
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    margin-bottom: 8px;
-}
-
-.shipping-price {
-
-    color: green;
-
-    font-size: 30px;
-
-    font-weight: bold;
-}
-
 .footer {
 
     text-align: center;
@@ -533,11 +477,6 @@ h1 {
         font-size: 38px;
     }
 
-    .filters-wrapper {
-
-        flex-direction: column;
-    }
-
 }
 
 </style>
@@ -552,60 +491,58 @@ h1 {
 Catalogo actualizado automaticamente
 </div>
 
-<div class="filters-wrapper">
+<!-- GENERO -->
+<div class="main-filters">
 
-    <div class="filters-left">
+    <button class="filter-btn active"
+    onclick="setGender('all', this)">
+    ALL
+    </button>
 
-        <button class="filter-btn active"
-        onclick="filterProducts('all', this)">
-        ALL
-        </button>
+    <button class="filter-btn"
+    onclick="setGender('Men', this)">
+    MEN
+    </button>
 
-        <button class="filter-btn"
-        onclick="filterProducts('Men', this)">
-        MEN
-        </button>
+    <button class="filter-btn"
+    onclick="setGender('Women', this)">
+    WOMEN
+    </button>
 
-        <button class="filter-btn"
-        onclick="filterProducts('Women', this)">
-        WOMEN
-        </button>
+    <button class="filter-btn"
+    onclick="setGender('Kids', this)">
+    KIDS
+    </button>
 
-        <button class="filter-btn"
-        onclick="filterProducts('Kids', this)">
-        KIDS
-        </button>
+</div>
 
-        <button class="filter-btn"
-        onclick="filterCategory('Clothing', this)">
-        ROPA
-        </button>
+<!-- CATEGORIA -->
+<div class="sub-filters">
 
-        <button class="filter-btn"
-        onclick="filterCategory('Shoes', this)">
-        ZAPATOS
-        </button>
+    <button class="filter-btn active"
+    onclick="setCategory('Shoes', this)">
+    ZAPATOS
+    </button>
 
-        <button class="filter-btn"
-        onclick="filterCategory('Accessories', this)">
-        ACCESORIOS
-        </button>
+    <button class="filter-btn"
+    onclick="setCategory('Clothing', this)">
+    ROPA
+    </button>
 
-    </div>
+    <button class="filter-btn"
+    onclick="setCategory('Accessories', this)">
+    ACCESORIOS
+    </button>
 
-    <div class="filters-right">
+    <button class="filter-btn"
+    onclick="sortProducts('asc')">
+    ⬆ PRECIO
+    </button>
 
-        <button class="filter-btn"
-        onclick="sortProducts('asc')">
-        ⬆ PRECIO
-        </button>
-
-        <button class="filter-btn"
-        onclick="sortProducts('desc')">
-        PRECIO ⬇
-        </button>
-
-    </div>
+    <button class="filter-btn"
+    onclick="sortProducts('desc')">
+    PRECIO ⬇
+    </button>
 
 </div>
 
@@ -624,11 +561,6 @@ for _, row in df.iterrows():
 
     categoria_final = row.get(
         "Categoria Final",
-        ""
-    )
-
-    categoria = row.get(
-        "Categoria Adidas",
         ""
     )
 
@@ -697,23 +629,11 @@ html += """
 
 <script>
 
-function clearButtons(){
+let currentGender = 'all';
 
-    document
-    .querySelectorAll('.filter-btn')
-    .forEach(btn => {
+let currentCategory = 'Shoes';
 
-        btn.classList.remove('active');
-
-    });
-
-}
-
-function filterProducts(filter, button) {
-
-    clearButtons();
-
-    button.classList.add('active');
+function refreshProducts(){
 
     const cards =
     document.querySelectorAll('.card');
@@ -723,47 +643,30 @@ function filterProducts(filter, button) {
         const genero =
         card.dataset.genero;
 
-        if (
-            filter === 'all'
-        ) {
-
-            card.classList.remove('hidden');
-
-            return;
-        }
-
-        if (
-            genero === filter
-        ) {
-
-            card.classList.remove('hidden');
-
-        } else {
-
-            card.classList.add('hidden');
-        }
-
-    });
-
-}
-
-function filterCategory(filter, button){
-
-    clearButtons();
-
-    button.classList.add('active');
-
-    const cards =
-    document.querySelectorAll('.card');
-
-    cards.forEach(card => {
-
         const categoria =
         card.dataset.categoria;
 
-        if (
-            categoria === filter
-        ) {
+        let show = true;
+
+        // genero
+        if(
+            currentGender !== 'all'
+            &&
+            genero !== currentGender
+        ){
+
+            show = false;
+        }
+
+        // categoria
+        if(
+            categoria !== currentCategory
+        ){
+
+            show = false;
+        }
+
+        if(show){
 
             card.classList.remove('hidden');
 
@@ -776,7 +679,55 @@ function filterCategory(filter, button){
 
 }
 
-function sortProducts(order) {
+function clearMainButtons(){
+
+    document
+    .querySelectorAll('.main-filters .filter-btn')
+    .forEach(btn => {
+
+        btn.classList.remove('active');
+
+    });
+
+}
+
+function clearSubButtons(){
+
+    document
+    .querySelectorAll('.sub-filters .filter-btn')
+    .forEach(btn => {
+
+        btn.classList.remove('active');
+
+    });
+
+}
+
+function setGender(gender, button){
+
+    currentGender = gender;
+
+    clearMainButtons();
+
+    button.classList.add('active');
+
+    refreshProducts();
+
+}
+
+function setCategory(category, button){
+
+    currentCategory = category;
+
+    clearSubButtons();
+
+    button.classList.add('active');
+
+    refreshProducts();
+
+}
+
+function sortProducts(order){
 
     const grid =
     document.getElementById('productGrid');
@@ -794,7 +745,7 @@ function sortProducts(order) {
         const priceB =
         parseFloat(b.dataset.price);
 
-        if (order === 'asc') {
+        if(order === 'asc'){
 
             return priceA - priceB;
 
@@ -812,6 +763,8 @@ function sortProducts(order) {
     });
 
 }
+
+refreshProducts();
 
 </script>
 
@@ -838,7 +791,7 @@ with open(
 
     f.write(html)
 
-print("\\n================================")
+print("\n================================")
 print("CATALOGO GENERADO")
 print("index.html")
 print("================================")
@@ -848,7 +801,7 @@ print("================================")
 # ==========================================
 try:
 
-    print("\\n================================")
+    print("\n================================")
     print("SUBIENDO A GITHUB")
     print("================================")
 
@@ -872,10 +825,10 @@ try:
         check=True
     )
 
-    print("\\n================================")
+    print("\n================================")
     print("CATALOGO PUBLICADO ONLINE")
     print("================================")
 
 except Exception as e:
 
-    print("\\nERROR GIT:", e)
+    print("\nERROR GIT:", e)
