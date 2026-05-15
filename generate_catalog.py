@@ -75,7 +75,7 @@ USD_TO_COP = 3750
 TAX_USA = 0.07
 ADIDAS_DISCOUNT = 0.30
 
-MAX_PROFIT_USD = 34
+MAX_PROFIT_USD = 35
 MIN_PROFIT_USD = 15
 
 MULTIPLIER = 1.7
@@ -714,7 +714,7 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        CATÁLOGO DE ADIDAS
+        Catalogo Adidas
     </div>
 
 </div>
@@ -787,6 +787,10 @@ body {{
     </button>
 
 </div>
+
+☰
+
+</button>
 
 <div class="catalog-layout">
 
@@ -1025,8 +1029,6 @@ function buildSizeFilters(sizes){
     document.getElementById('sizeFilters');
 
     container.innerHTML = '';
-
-    updateSelectedSizeLabel();
 
     // ======================================
     // SCROLL INTERNO
@@ -1307,78 +1309,32 @@ function appendSizeOption(container, size){
 
 function toggleSize(checkbox){
 
-    // ======================================
-    // DESMARCAR TODAS
-    // ======================================
-    document
-    .querySelectorAll(
-        '#sizeFilters input[type="checkbox"]'
-    )
-    .forEach(item => {
+    const value = checkbox.value;
 
-        item.checked = false;
-    });
+    if(checkbox.checked){
 
-    // ======================================
-    // MARCAR SOLO LA ACTUAL
-    // ======================================
-    checkbox.checked = true;
-
-    // ======================================
-    // GUARDAR SOLO UNA TALLA
-    // ======================================
-    selectedSizes = [checkbox.value];
-
-    // ======================================
-    // ACTUALIZAR LABEL SELECCIONADA
-    // ======================================
-    updateSelectedSizeLabel();
-
-    refreshProducts();
-}
-function updateSelectedSizeLabel(){
-
-    let label =
-    document.getElementById(
-        'selectedSizeLabel'
-    );
-
-    if(!label){
-
-        label =
-        document.createElement('div');
-
-        label.id =
-        'selectedSizeLabel';
-
-        label.style.marginBottom =
-        '14px';
-
-        label.style.fontWeight =
-        'bold';
-
-        label.style.color =
-        '#8a6b2f';
-
-        const sidebar =
-        document.getElementById(
-            'sizeFilters'
-        );
-
-        sidebar.prepend(label);
-    }
-
-    if(selectedSizes.length > 0){
-
-        label.innerHTML =
-        'TALLA: ' +
-        selectedSizes[0];
+        if(!selectedSizes.includes(value)){
+            selectedSizes.push(value);
+        }
 
     } else {
 
-        label.innerHTML = '';
+        selectedSizes =
+        selectedSizes.filter(
+            x => x !== value
+        );
     }
+
+    refreshProducts();
+
+    window.scrollTo({{
+
+        top: 0,
+
+        behavior: 'smooth'
+    }});
 }
+
 function toggleSidebarMenu(){
 
     const sidebar =
