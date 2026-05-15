@@ -72,13 +72,10 @@ with open(
 # CONFIG
 # ==========================================
 USD_TO_COP = 3750
-
 TAX_USA = 0.07
-
 ADIDAS_DISCOUNT = 0.30
 
 MAX_PROFIT_USD = 35
-
 MIN_PROFIT_USD = 15
 
 MULTIPLIER = 1.7
@@ -420,11 +417,12 @@ body {{
     top: 120px;
 
     height: fit-content;
-}}
-
-.sidebar.hidden-sidebar {{
 
     display: none;
+}}
+
+.sidebar.mobile-open {{
+    display: block;
 }}
 
 .sidebar-title {{
@@ -577,6 +575,24 @@ body {{
     display: none;
 }}
 
+.menu-btn {{
+
+    border:none;
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:10px 14px;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 4px 12px rgba(0,0,0,0.08);
+}}
+
 @media(max-width:768px){{
 
     .catalog-layout {{
@@ -695,9 +711,21 @@ body {{
 
 </div>
 
+<div style="margin-bottom:16px;">
+
+    <button
+    class="menu-btn"
+    onclick="toggleSidebarMenu()">
+
+    ☰
+
+    </button>
+
+</div>
+
 <div class="catalog-layout">
 
-    <div class="sidebar hidden-sidebar"
+    <div class="sidebar"
     id="sizeSidebar">
 
         <div class="sidebar-title">
@@ -923,8 +951,6 @@ function refreshProducts(){
         }
 
     });
-
-    toggleSidebar();
 }
 
 function buildSizeFilters(sizes){
@@ -934,29 +960,97 @@ function buildSizeFilters(sizes){
 
     container.innerHTML = '';
 
-    sizes.sort((a,b) =>
-        a.localeCompare(b)
-    );
+    const alphaSizes = [];
+    const numericSizes = [];
 
     sizes.forEach(size => {
 
-        const item =
-        document.createElement('label');
+        const clean = size.trim();
 
-        item.className =
-        'size-option';
-
-        item.innerHTML = `
-            <input
-                type="checkbox"
-                value="${size}"
-                onchange="toggleSize(this)">
-            ${size}
-        `;
-
-        container.appendChild(item);
+        if(/^[0-9.]+$/.test(clean)){
+            numericSizes.push(clean);
+        } else {
+            alphaSizes.push(clean);
+        }
 
     });
+
+    alphaSizes.sort((a,b) => a.localeCompare(b));
+    numericSizes.sort((a,b) => parseFloat(a)-parseFloat(b));
+
+    if(currentCategory === 'Clothing'){
+
+        if(alphaSizes.length > 0){
+
+            const title1 =
+            document.createElement('div');
+
+            title1.innerHTML =
+            '<strong>ALFABÉRICAS</strong>';
+
+            title1.style.marginBottom =
+            '12px';
+
+            title1.style.marginTop =
+            '10px';
+
+            container.appendChild(title1);
+
+            alphaSizes.forEach(size => {
+                appendSizeOption(container, size);
+            });
+        }
+
+        if(numericSizes.length > 0){
+
+            const title2 =
+            document.createElement('div');
+
+            title2.innerHTML =
+            '<strong>NUMÉRICAS</strong>';
+
+            title2.style.marginBottom =
+            '12px';
+
+            title2.style.marginTop =
+            '18px';
+
+            container.appendChild(title2);
+
+            numericSizes.forEach(size => {
+                appendSizeOption(container, size);
+            });
+        }
+
+    } else {
+
+        sizes.sort((a,b)=>
+            a.localeCompare(b)
+        );
+
+        sizes.forEach(size => {
+            appendSizeOption(container, size);
+        });
+    }
+}
+
+function appendSizeOption(container, size){
+
+    const item =
+    document.createElement('label');
+
+    item.className =
+    'size-option';
+
+    item.innerHTML = `
+        <input
+            type="checkbox"
+            value="${size}"
+            onchange="toggleSize(this)">
+        ${size}
+    `;
+
+    container.appendChild(item);
 }
 
 function toggleSize(checkbox){
@@ -980,23 +1074,12 @@ function toggleSize(checkbox){
     refreshProducts();
 }
 
-function toggleSidebar(){
+function toggleSidebarMenu(){
 
     const sidebar =
     document.getElementById('sizeSidebar');
 
-    if(currentGender === 'all'){
-
-        sidebar.classList.add(
-            'hidden-sidebar'
-        );
-
-    } else {
-
-        sidebar.classList.remove(
-            'hidden-sidebar'
-        );
-    }
+    sidebar.classList.toggle('mobile-open');
 }
 
 function clearMainButtons(){
