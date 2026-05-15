@@ -1026,6 +1026,8 @@ function buildSizeFilters(sizes){
 
     container.innerHTML = '';
 
+    updateSelectedSizeLabel();
+
     // ======================================
     // SCROLL INTERNO
     // ======================================
@@ -1305,25 +1307,78 @@ function appendSizeOption(container, size){
 
 function toggleSize(checkbox){
 
-    const value = checkbox.value;
+    // ======================================
+    // DESMARCAR TODAS
+    // ======================================
+    document
+    .querySelectorAll(
+        '#sizeFilters input[type="checkbox"]'
+    )
+    .forEach(item => {
 
-    if(checkbox.checked){
+        item.checked = false;
+    });
 
-        if(!selectedSizes.includes(value)){
-            selectedSizes.push(value);
-        }
+    // ======================================
+    // MARCAR SOLO LA ACTUAL
+    // ======================================
+    checkbox.checked = true;
 
-    } else {
+    // ======================================
+    // GUARDAR SOLO UNA TALLA
+    // ======================================
+    selectedSizes = [checkbox.value];
 
-        selectedSizes =
-        selectedSizes.filter(
-            x => x !== value
-        );
-    }
+    // ======================================
+    // ACTUALIZAR LABEL SELECCIONADA
+    // ======================================
+    updateSelectedSizeLabel();
 
     refreshProducts();
 }
+function updateSelectedSizeLabel(){
 
+    let label =
+    document.getElementById(
+        'selectedSizeLabel'
+    );
+
+    if(!label){
+
+        label =
+        document.createElement('div');
+
+        label.id =
+        'selectedSizeLabel';
+
+        label.style.marginBottom =
+        '14px';
+
+        label.style.fontWeight =
+        'bold';
+
+        label.style.color =
+        '#8a6b2f';
+
+        const sidebar =
+        document.getElementById(
+            'sizeFilters'
+        );
+
+        sidebar.prepend(label);
+    }
+
+    if(selectedSizes.length > 0){
+
+        label.innerHTML =
+        'TALLA: ' +
+        selectedSizes[0];
+
+    } else {
+
+        label.innerHTML = '';
+    }
+}
 function toggleSidebarMenu(){
 
     const sidebar =
