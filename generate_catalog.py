@@ -452,16 +452,18 @@ body {{
 
     justify-content: center;
 
-    padding-bottom: 30px;
+    padding-bottom: 26px;
 }}
 
 .image-container img {{
 
-    width: 88%;
+    width: 94%;
 
-    height: 88%;
+    height: 94%;
 
     object-fit: contain;
+
+    transition: 0.3s;
 }}
 
 .content {{
@@ -537,19 +539,86 @@ body {{
 
     body {{
 
-        padding: 16px;
+        padding: 12px;
     }}
 
     .logo {{
 
-        width: 190px;
+        width: 170px;
+    }}
+
+    .subtitle {{
+
+        font-size: 14px;
     }}
 
     .filter-btn {{
 
-        padding: 10px 18px;
+        padding: 9px 14px;
 
-        font-size: 13px;
+        font-size: 12px;
+    }}
+
+    .grid {{
+
+        grid-template-columns:
+        repeat(2, 1fr);
+
+        gap: 12px;
+    }}
+
+    .card {{
+
+        border-radius: 18px;
+    }}
+
+    .image-container {{
+
+        height: 220px;
+
+        padding-bottom: 16px;
+    }}
+
+    .image-container img {{
+
+        width: 96%;
+
+        height: 96%;
+    }}
+
+    .content {{
+
+        padding: 14px;
+    }}
+
+    .category {{
+
+        font-size: 11px;
+
+        margin-bottom: 8px;
+    }}
+
+    .title {{
+
+        font-size: 15px;
+
+        min-height: 42px;
+
+        margin-bottom: 14px;
+    }}
+
+    .price {{
+
+        font-size: 22px;
+
+        margin-bottom: 12px;
+    }}
+
+    .sizes {{
+
+        font-size: 12px;
+
+        line-height: 1.5;
     }}
 
 }}
@@ -567,14 +636,13 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        Luxury Fashion & Sneakers
+        Catalogo Adidas
     </div>
 
 </div>
 
 <div class="filters-sticky">
 
-    <!-- GENERO -->
     <div class="main-filters">
 
         <button class="filter-btn active"
@@ -599,7 +667,6 @@ body {{
 
     </div>
 
-    <!-- CATEGORIA -->
     <div class="sub-filters">
 
         <button class="filter-btn active"
@@ -766,27 +833,27 @@ function clearMainButtons(){
 
     document
     .querySelectorAll('.main-filters .filter-btn')
-    .forEach(btn => {{
+    .forEach(btn => {
 
         btn.classList.remove('active');
 
-    }});
+    });
 
 }
 
-function clearSubButtons(){{
+function clearSubButtons(){
 
     document
     .querySelectorAll('.sub-filters .filter-btn')
-    .forEach(btn => {{
+    .forEach(btn => {
 
         btn.classList.remove('active');
 
-    }});
+    });
 
-}}
+}
 
-function setGender(gender, button){{
+function setGender(gender, button){
 
     currentGender = gender;
 
@@ -796,9 +863,9 @@ function setGender(gender, button){{
 
     refreshProducts();
 
-}}
+}
 
-function setCategory(category, button){{
+function setCategory(category, button){
 
     currentCategory = category;
 
@@ -808,9 +875,9 @@ function setCategory(category, button){{
 
     refreshProducts();
 
-}}
+}
 
-function sortProducts(order){{
+function sortProducts(order){
 
     const grid =
     document.getElementById('productGrid');
@@ -820,7 +887,7 @@ function sortProducts(order){{
         document.querySelectorAll('.card')
     );
 
-    cards.sort((a, b) => {{
+    cards.sort((a, b) => {
 
         const priceA =
         parseFloat(a.dataset.price);
@@ -828,24 +895,24 @@ function sortProducts(order){{
         const priceB =
         parseFloat(b.dataset.price);
 
-        if(order === 'asc'){{
+        if(order === 'asc'){
 
             return priceA - priceB;
 
-        }} else {{
+        } else {
 
             return priceB - priceA;
-        }}
+        }
 
-    }});
+    });
 
-    cards.forEach(card => {{
+    cards.forEach(card => {
 
         grid.appendChild(card);
 
-    }});
+    });
 
-}}
+}
 
 refreshProducts();
 
@@ -855,7 +922,7 @@ refreshProducts();
 
 Saroma Store © 2026<br>
 
-Luxury Fashion & Sneakers<br><br>
+Catalogo Adidas<br><br>
 
 Precios en COP sujetos a cambios.
 
