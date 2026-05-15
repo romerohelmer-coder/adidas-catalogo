@@ -669,62 +669,30 @@ body {{
     display: none;
 }}
 
-.menu-wrapper {{
-
-    position: sticky;
-
-    top: 88px;
-
-    z-index: 998;
-
-    display: flex;
-
-    justify-content: flex-start;
-
-    margin-bottom: 18px;
-
-    padding-top: 4px;
-}}
-
 .menu-btn {{
 
-    border: none;
+    padding: 10px 16px;
 
-    background: white;
+    border-radius: 30px;
 
-    border-radius: 14px;
+    border: 1px solid #d8c7a2;
 
-    padding: 12px 18px;
+    background: #f1e6d3;
 
-    font-size: 16px;
+    color: #7a5d2b;
 
     font-weight: bold;
 
-    color: #8a6b2f;
-
     cursor: pointer;
 
-    box-shadow:
-    0 4px 12px rgba(0,0,0,0.08);
-
     transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    all 0.18s ease;
 }}
 
 .menu-btn:hover {{
 
     transform:
     translateY(-1px);
-
-    box-shadow:
-    0 6px 16px rgba(0,0,0,0.12);
-}}
-
-.menu-btn:active {{
-
-    transform:
-    scale(0.96);
 }}
 
 @media(max-width:768px){{
@@ -767,34 +735,11 @@ body {{
         padding: 10px 12px;
     }}
 
-    .menu-wrapper {{
+        .menu-btn {{
 
-        position: relative;
+        font-size: 12px;
 
-        top: 0;
-
-        width: 100%;
-
-        margin-top: 12px;
-
-        margin-bottom: 14px;
-    }}
-
-    .menu-btn {{
-
-        width: 100%;
-
-        display: flex;
-
-        justify-content: center;
-
-        align-items: center;
-
-        font-size: 14px;
-
-        padding: 14px;
-
-        border-radius: 16px;
+        padding: 10px 12px;
     }}
 
     .catalog-layout {{
@@ -962,30 +907,14 @@ body {{
         </button>
 
         <button class="filter-btn"
-        onclick="sortProducts('asc')">
-        ⬆ PRECIO
-        </button>
-
-        <button class="filter-btn"
-        onclick="sortProducts('desc')">
-        PRECIO ⬇
+        onclick="toggleSidebarMenu()">
+        ☰ TALLAS
         </button>
 
     </div>
 
 </div>
 
-<div class="menu-wrapper">
-
-    <button
-    class="menu-btn"
-    onclick="toggleSidebarMenu()">
-
-    ☰ TALLAS
-
-    </button>
-
-</div>
 
 <div class="catalog-layout">
 
