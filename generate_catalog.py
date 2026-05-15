@@ -600,44 +600,56 @@ body {{
     display: none;
 }}
 
+.menu-wrapper {{
+
+    position: sticky;
+
+    top: 88px;
+
+    z-index: 998;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    margin-bottom: 18px;
+
+    padding-top: 4px;
+}}
+
 .menu-btn {{
-
-    position: fixed;
-
-    right: 18px;
-
-    bottom: 22px;
-
-    z-index: 9999;
 
     border: none;
 
-    background: #b9975b;
+    background: white;
 
-    color: white;
+    border-radius: 14px;
 
-    border-radius: 18px;
+    padding: 12px 18px;
 
-    padding: 14px 18px;
-
-    font-size: 24px;
+    font-size: 16px;
 
     font-weight: bold;
+
+    color: #8a6b2f;
 
     cursor: pointer;
 
     box-shadow:
-    0 8px 22px rgba(0,0,0,0.22);
+    0 4px 12px rgba(0,0,0,0.08);
 
     transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }}
 
 .menu-btn:hover {{
 
     transform:
-    scale(1.06);
+    translateY(-1px);
+
+    box-shadow:
+    0 6px 16px rgba(0,0,0,0.12);
 }}
 
 .menu-btn:active {{
@@ -764,9 +776,17 @@ body {{
 
 </div>
 
-<button
-class="menu-btn"
-onclick="toggleSidebarMenu()">
+<div class="menu-wrapper">
+
+    <button
+    class="menu-btn"
+    onclick="toggleSidebarMenu()">
+
+    ☰ TALLAS
+
+    </button>
+
+</div>
 
 ☰
 
