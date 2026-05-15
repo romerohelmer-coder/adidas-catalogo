@@ -766,36 +766,31 @@ for _, row in df.iterrows():
         ""
     )
 
-    sku = row.get(
-        "SKU",
-        ""
-    )
-
     precio_venta_cop = row.get(
         "Precio Venta COP",
         0
     )
 
+    # ======================================
+    # LIMPIAR LINK IMAGEN
+    # ======================================
+    short_image = imagen
+
+    if "?" in short_image:
+
+        short_image = short_image.split("?")[0]
+
+    # ======================================
+    # WHATSAPP
+    # ======================================
     whatsapp_text = f'''
 Buen día, deseo pedir el siguiente producto.
 
 Producto:
 {nombre}
 
-SKU:
-{sku}
-
-Categoria:
-{categoria_final}
-
-Precio:
-${int(precio_venta_cop):,} COP
-
-Tallas disponibles:
-{tallas}
-
 Imagen:
-{imagen}
+{short_image}
 '''
 
     whatsapp_text = whatsapp_text.replace(
