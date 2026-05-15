@@ -141,13 +141,38 @@ body {
 
     top: 120px;
 
-    height: fit-content;
+    max-height: 80vh;
+
+    overflow: hidden;
 
     display: none;
 }
 
 .sidebar.mobile-open {
+
     display: block;
+
+    animation:
+    fadeMenu 0.2s ease;
+}
+
+@keyframes fadeMenu {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+        translateY(-6px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+        translateY(0);
+    }
 }
 
 .sidebar-title {
@@ -149357,6 +149382,7 @@ function refreshProducts(){
     });
 }
 
+
 function buildSizeFilters(sizes){
 
     const container =
@@ -149364,79 +149390,263 @@ function buildSizeFilters(sizes){
 
     container.innerHTML = '';
 
-    const alphaSizes = [];
+    // ======================================
+    // SCROLL INTERNO
+    // ======================================
+    container.style.maxHeight =
+    '65vh';
+
+    container.style.overflowY =
+    'auto';
+
+    container.style.overflowX =
+    'hidden';
+
+    container.style.paddingRight =
+    '4px';
+
+    // ======================================
+    // BOTON CERRAR
+    // ======================================
+    const closeWrapper =
+    document.createElement('div');
+
+    closeWrapper.style.position =
+    'sticky';
+
+    closeWrapper.style.top =
+    '0';
+
+    closeWrapper.style.background =
+    'white';
+
+    closeWrapper.style.paddingBottom =
+    '12px';
+
+    closeWrapper.style.zIndex =
+    '5';
+
+    const closeBtn =
+    document.createElement('button');
+
+    closeBtn.innerHTML =
+    '✕ Cerrar';
+
+    closeBtn.style.width =
+    '100%';
+
+    closeBtn.style.padding =
+    '11px';
+
+    closeBtn.style.border =
+    'none';
+
+    closeBtn.style.borderRadius =
+    '12px';
+
+    closeBtn.style.background =
+    '#b9975b';
+
+    closeBtn.style.color =
+    'white';
+
+    closeBtn.style.fontWeight =
+    'bold';
+
+    closeBtn.style.cursor =
+    'pointer';
+
+    closeBtn.style.fontSize =
+    '14px';
+
+    closeBtn.onclick = () => {
+
+        document
+        .getElementById('sizeSidebar')
+        .classList.remove('mobile-open');
+    };
+
+    closeWrapper.appendChild(closeBtn);
+
+    container.appendChild(closeWrapper);
+
+    // ======================================
+    // SEPARAR TALLAS
+    // ======================================
+    const traditionalSizes = [];
+    const otherSizes = [];
     const numericSizes = [];
+
+    // ======================================
+    // ORDEN XS -> XL
+    // ======================================
+    const traditionalOrder = [
+
+        'XS',
+        'S',
+        'M',
+        'L',
+        'XL'
+    ];
 
     sizes.forEach(size => {
 
-        const clean = size.trim();
+        const clean =
+        size.trim().toUpperCase();
 
-        if(/^[0-9.]+$/.test(clean)){
-            numericSizes.push(clean);
+        if(
+            /^[0-9.]+$/.test(clean)
+        ){
+
+            if(
+                !numericSizes.includes(clean)
+            ){
+
+                numericSizes.push(clean);
+            }
+
+        } else if(
+            traditionalOrder.includes(clean)
+        ){
+
+            if(
+                !traditionalSizes.includes(clean)
+            ){
+
+                traditionalSizes.push(clean);
+            }
+
         } else {
-            alphaSizes.push(clean);
+
+            if(
+                !otherSizes.includes(clean)
+            ){
+
+                otherSizes.push(clean);
+            }
         }
 
     });
 
-    alphaSizes.sort((a,b) => a.localeCompare(b));
-    numericSizes.sort((a,b) => parseFloat(a)-parseFloat(b));
+    traditionalSizes.sort((a,b)=>
+
+        traditionalOrder.indexOf(a)
+        -
+        traditionalOrder.indexOf(b)
+    );
+
+    otherSizes.sort((a,b)=>
+
+        a.localeCompare(b)
+    );
+
+    numericSizes.sort((a,b)=>
+
+        parseFloat(a)
+        -
+        parseFloat(b)
+    );
 
     if(currentCategory === 'Clothing'){
 
-        if(alphaSizes.length > 0){
+        if(traditionalSizes.length > 0){
 
-            const title1 =
-            document.createElement('div');
+            traditionalSizes.forEach(size => {
 
-            title1.innerHTML =
-            '<strong>ALFABÉRICAS</strong>';
+                appendSizeOption(
+                    container,
+                    size
+                );
 
-            title1.style.marginBottom =
-            '12px';
-
-            title1.style.marginTop =
-            '10px';
-
-            container.appendChild(title1);
-
-            alphaSizes.forEach(size => {
-                appendSizeOption(container, size);
             });
+
+            if(
+                otherSizes.length > 0
+                ||
+                numericSizes.length > 0
+            ){
+
+                const line1 =
+                document.createElement('hr');
+
+                line1.style.margin =
+                '14px 0';
+
+                line1.style.border =
+                'none';
+
+                line1.style.borderTop =
+                '1px solid #ece3d2';
+
+                container.appendChild(line1);
+            }
+        }
+
+        if(otherSizes.length > 0){
+
+            otherSizes.forEach(size => {
+
+                appendSizeOption(
+                    container,
+                    size
+                );
+
+            });
+
+            if(numericSizes.length > 0){
+
+                const line2 =
+                document.createElement('hr');
+
+                line2.style.margin =
+                '14px 0';
+
+                line2.style.border =
+                'none';
+
+                line2.style.borderTop =
+                '1px solid #ece3d2';
+
+                container.appendChild(line2);
+            }
         }
 
         if(numericSizes.length > 0){
 
-            const title2 =
-            document.createElement('div');
-
-            title2.innerHTML =
-            '<strong>NUMÉRICAS</strong>';
-
-            title2.style.marginBottom =
-            '12px';
-
-            title2.style.marginTop =
-            '18px';
-
-            container.appendChild(title2);
-
             numericSizes.forEach(size => {
-                appendSizeOption(container, size);
+
+                appendSizeOption(
+                    container,
+                    size
+                );
+
             });
         }
 
     } else {
 
-        sizes.sort((a,b)=>
-            a.localeCompare(b)
-        );
+        const merged = [
 
-        sizes.forEach(size => {
-            appendSizeOption(container, size);
+            ...traditionalSizes,
+
+            ...otherSizes,
+
+            ...numericSizes
+        ];
+
+        merged.forEach(size => {
+
+            appendSizeOption(
+                container,
+                size
+            );
+
         });
     }
+
+    container.scrollTop = 0;
 }
+
 
 function appendSizeOption(container, size){
 
