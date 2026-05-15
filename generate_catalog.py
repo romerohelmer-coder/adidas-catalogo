@@ -77,7 +77,7 @@ MAX_PROFIT_USD = 35
 
 MIN_PROFIT_USD = 15
 
-MULTIPLIER = 1.8
+MULTIPLIER = 1.75
 
 # ==========================================
 # LIMPIAR PRECIO
@@ -636,7 +636,7 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        Catalogo Adidas
+        CATÁLOGO ADIDAS
     </div>
 
 </div>
