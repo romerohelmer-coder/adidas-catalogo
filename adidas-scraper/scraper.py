@@ -111,24 +111,45 @@ def classify_gender(nombre, subtitle, url):
     return "Unisex"
 
 # ==========================================
-# TEMPORAL
-# (hasta usar metadata oficial)
+# CLASIFICAR PRODUCTO
+# USANDO URL OFICIAL ADIDAS
 # ==========================================
-def classify_product(nombre):
+def classify_product(url):
 
-    text = str(nombre).lower()
+    text = str(url).lower()
 
+    # ======================================
+    # SHOES
+    # ======================================
+    shoes_keywords = [
+
+        "-shoes",
+        "-slides",
+        "-sandals",
+        "-cleats",
+        "-boots"
+    ]
+
+    for word in shoes_keywords:
+
+        if word in text:
+
+            return "Shoes"
+
+    # ======================================
+    # ACCESSORIES
+    # ======================================
     accessories_keywords = [
 
-        "backpack",
-        "bag",
-        "cap",
-        "hat",
-        "sock",
-        "bottle",
-        "ball",
-        "glove",
-        "belt"
+        "-backpack",
+        "-bag",
+        "-cap",
+        "-hat",
+        "-socks",
+        "-gloves",
+        "-ball",
+        "-belt",
+        "-bottle"
     ]
 
     for word in accessories_keywords:
@@ -137,27 +158,10 @@ def classify_product(nombre):
 
             return "Accessories"
 
-    clothing_keywords = [
-
-        "hoodie",
-        "pants",
-        "shirt",
-        "shorts",
-        "jacket",
-        "tee",
-        "jersey",
-        "tracksuit",
-        "dress",
-        "leggings"
-    ]
-
-    for word in clothing_keywords:
-
-        if word in text:
-
-            return "Clothing"
-
-    return "Shoes"
+    # ======================================
+    # CLOTHING
+    # ======================================
+    return "Clothing"
 
 # ==========================================
 # EXTRAER PRODUCTS
@@ -319,15 +323,6 @@ def process_product(p):
 
         sku = p.get("id", "")
 
-        # ==================================
-        # DEBUG KEYS ADIDAS
-        # ==================================
-        print("\n===================")
-        print("PRODUCT KEYS")
-        print("===================")
-
-        print(p.keys())
-
         if not sku:
 
             return None
@@ -370,10 +365,10 @@ def process_product(p):
         )
 
         # ==================================
-        # TEMPORAL
+        # CATEGORIA FINAL
         # ==================================
         categoria_final = classify_product(
-            nombre
+            link
         )
 
         # ==================================
@@ -403,9 +398,6 @@ def process_product(p):
             )
         )
 
-        print("\nIMAGE HD:")
-        print(image)
-
         # ==================================
         # RATING
         # ==================================
@@ -418,19 +410,6 @@ def process_product(p):
             "ratingCount",
             ""
         )
-
-        # ==================================
-        # BADGES
-        # ==================================
-        badges = p.get(
-            "badges",
-            []
-        )
-
-        badges_text = ", ".join([
-            b.get("text", "")
-            for b in badges
-        ])
 
         # ==================================
         # PRECIOS
@@ -533,8 +512,6 @@ def process_product(p):
             "Reviews": rating_count,
 
             "Colores": colors,
-
-            "Badges": badges_text,
 
             "Sold Out": sold_out,
 
