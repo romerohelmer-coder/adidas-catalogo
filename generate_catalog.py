@@ -32,6 +32,8 @@ exclude_keywords = [
     "sock",
     "socks",
 
+    "cushioned",
+
     "shin guard",
     "shin guards",
 
