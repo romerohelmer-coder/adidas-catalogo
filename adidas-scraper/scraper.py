@@ -27,7 +27,7 @@ driver = webdriver.Chrome(
 # ==========================================
 # CONFIG
 # ==========================================
-BASE_URL = "https://www.adidas.com/us/shop"
+BASE_URL = "https://www.adidas.com/us/shop?grid=true&sort=top-sellers"
 
 VIEW_SIZE = 48
 
@@ -535,7 +535,7 @@ def process_product(p):
 # ==========================================
 while True:
 
-    url = f"{BASE_URL}?start={START}"
+    url = f"{BASE_URL}&start={START}"
 
     print("\n================================")
     print("URL:", url)
