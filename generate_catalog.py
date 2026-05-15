@@ -1422,13 +1422,31 @@ function appendSizeOption(container, size){
     item.className =
     'size-option';
 
+    const isChecked =
+    selectedSizes.includes(size);
+
     item.innerHTML = `
         <input
             type="checkbox"
             value="${size}"
+            ${isChecked ? 'checked' : ''}
             onchange="toggleSize(this)">
         ${size}
     `;
+
+    if(isChecked){
+
+        item.style.background =
+        '#ead7b3';
+
+        item.style.border =
+        '1px solid #b9975b';
+
+    } else {
+
+        item.style.border =
+        '1px solid transparent';
+    }
 
     container.appendChild(item);
 }
@@ -1437,6 +1455,9 @@ function toggleSize(checkbox){
 
     const value =
     checkbox.value;
+
+    const option =
+    checkbox.closest('.size-option');
 
     if(checkbox.checked){
 
@@ -1447,12 +1468,24 @@ function toggleSize(checkbox){
             selectedSizes.push(value);
         }
 
+        option.style.background =
+        '#ead7b3';
+
+        option.style.border =
+        '1px solid #b9975b';
+
     } else {
 
         selectedSizes =
         selectedSizes.filter(
             x => x !== value
         );
+
+        option.style.background =
+        '#f8f4ec';
+
+        option.style.border =
+        '1px solid transparent';
     }
 
     updateSelectedSizeLabel();
