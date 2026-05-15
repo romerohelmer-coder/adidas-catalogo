@@ -353,15 +353,28 @@ body {{
 
     display: flex;
 
-    justify-content: center;
-
-    gap: 12px;
-
     flex-wrap: wrap;
+
+    gap: 10px;
+
+    align-items: center;
 }}
 
 .main-filters {{
-    margin-bottom: 14px;
+
+    justify-content: center;
+
+    margin-bottom: 18px;
+}}
+
+.sub-filters {{
+
+    justify-content: center;
+
+    padding-top: 12px;
+
+    border-top:
+    1px solid #e8dcc7;
 }}
 
 .filter-btn {{
@@ -379,13 +392,69 @@ body {{
     font-weight: bold;
 
     cursor: pointer;
+
+    transition:
+    all 0.18s ease;
 }}
 
-.filter-btn.active {{
+.filter-btn:hover {{
 
-    background: #b9975b;
+    transform:
+    translateY(-1px);
+}}
+
+.main-filters .filter-btn {{
+
+    background:
+    linear-gradient(
+        to bottom,
+        #c8ab73,
+        #b9975b
+    );
 
     color: white;
+
+    border: none;
+
+    font-size: 15px;
+
+    box-shadow:
+    0 4px 12px rgba(0,0,0,0.08);
+}}
+
+.main-filters .filter-btn.active {{
+
+    background:
+    linear-gradient(
+        to bottom,
+        #9e7b3d,
+        #8c6a31
+    );
+
+    transform:
+    scale(1.03);
+}}
+
+.sub-filters .filter-btn {{
+
+    background: white;
+
+    color: #8a6b2f;
+
+    border:
+    1px solid #d8c7a2;
+
+    font-size: 14px;
+}}
+
+.sub-filters .filter-btn.active {{
+
+    background: #f1e6d3;
+
+    border:
+    1px solid #b9975b;
+
+    color: #7a5d2b;
 }}
 
 .catalog-layout {{
@@ -661,22 +730,54 @@ body {{
 @media(max-width:768px){{
 
     body {{
-        padding: 12px;
+        padding: 10px;
     }}
 
-    .catalog-layout {{
-        flex-direction: column;
+    .filters-sticky {{
+
+        padding-bottom: 10px;
+    }}
+
+    .main-filters,
+    .sub-filters {{
+
+        gap: 8px;
+    }}
+
+    .main-filters .filter-btn {{
+
+        flex: 1 1 calc(33.33% - 8px);
+
+        font-size: 13px;
+
+        padding: 11px 8px;
+    }}
+
+    .sub-filters {{
+
+        justify-content: center;
+
+        padding-top: 10px;
+    }}
+
+    .sub-filters .filter-btn {{
+
+        font-size: 12px;
+
+        padding: 10px 12px;
     }}
 
     .menu-wrapper {{
 
-        position: sticky;
+        position: relative;
 
-        top: 70px;
+        top: 0;
 
-        z-index: 1200;
+        width: 100%;
 
-        padding-bottom: 10px;
+        margin-top: 12px;
+
+        margin-bottom: 14px;
     }}
 
     .menu-btn {{
@@ -689,9 +790,15 @@ body {{
 
         align-items: center;
 
-        font-size: 15px;
+        font-size: 14px;
 
         padding: 14px;
+
+        border-radius: 16px;
+    }}
+
+    .catalog-layout {{
+        flex-direction: column;
     }}
 
     .sidebar {{
@@ -1508,6 +1615,13 @@ function setGender(gender, button){
     button.classList.add('active');
 
     refreshProducts();
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: 'smooth'
+    });
 }
 
 function setCategory(category, button){
