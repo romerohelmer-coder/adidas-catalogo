@@ -117658,7 +117658,6 @@ body {
 <script>
 
 let currentGender = 'all';
-
 let currentCategory = 'Shoes';
 
 function refreshProducts(){
@@ -117681,23 +117680,18 @@ function refreshProducts(){
             &&
             genero !== currentGender
         ){
-
             show = false;
         }
 
         if(
             categoria !== currentCategory
         ){
-
             show = false;
         }
 
         if(show){
-
             card.classList.remove('hidden');
-
         } else {
-
             card.classList.add('hidden');
         }
 
@@ -117710,9 +117704,7 @@ function clearMainButtons(){
     document
     .querySelectorAll('.main-filters .filter-btn')
     .forEach(btn => {
-
         btn.classList.remove('active');
-
     });
 
 }
@@ -117722,9 +117714,7 @@ function clearSubButtons(){
     document
     .querySelectorAll('.sub-filters .filter-btn')
     .forEach(btn => {
-
         btn.classList.remove('active');
-
     });
 
 }
@@ -117772,20 +117762,15 @@ function sortProducts(order){
         parseFloat(b.dataset.price);
 
         if(order === 'asc'){
-
             return priceA - priceB;
-
         } else {
-
             return priceB - priceA;
         }
 
     });
 
     cards.forEach(card => {
-
         grid.appendChild(card);
-
     });
 
 }

@@ -45,11 +45,29 @@ exclude_keywords = [
     "sticker"
 ]
 
+# ==========================================
+# FILTRO AVANZADO
+# ==========================================
 df = df[
     ~df["Nombre"]
+    .astype(str)
     .str.lower()
     .str.contains(
         "|".join(exclude_keywords),
+        na=False,
+        regex=True
+    )
+]
+
+# ==========================================
+# ELIMINAR CUSHIONED DIRECTAMENTE
+# ==========================================
+df = df[
+    ~df["Nombre"]
+    .astype(str)
+    .str.contains(
+        "Cushioned",
+        case=False,
         na=False
     )
 ]
@@ -743,48 +761,18 @@ body {{
 # ==========================================
 for _, row in df.iterrows():
 
-    genero = row.get(
-        "Genero",
-        ""
-    )
+    genero = row.get("Genero", "")
+    categoria_final = row.get("Categoria Final", "")
+    nombre = row.get("Nombre", "")
+    tallas = row.get("Tallas", "")
+    imagen = row.get("Imagen", "")
+    precio_venta_cop = row.get("Precio Venta COP", 0)
 
-    categoria_final = row.get(
-        "Categoria Final",
-        ""
-    )
-
-    nombre = row.get(
-        "Nombre",
-        ""
-    )
-
-    tallas = row.get(
-        "Tallas",
-        ""
-    )
-
-    imagen = row.get(
-        "Imagen",
-        ""
-    )
-
-    precio_venta_cop = row.get(
-        "Precio Venta COP",
-        0
-    )
-
-    # ======================================
-    # LIMPIAR LINK IMAGEN
-    # ======================================
     short_image = imagen
 
     if "?" in short_image:
-
         short_image = short_image.split("?")[0]
 
-    # ======================================
-    # WHATSAPP
-    # ======================================
     whatsapp_text = f'''
 Buen día, deseo pedir el siguiente producto.
 
@@ -845,9 +833,6 @@ Imagen:
 
     html += card
 
-# ==========================================
-# JS
-# ==========================================
 html += """
 
 </div>
@@ -855,7 +840,6 @@ html += """
 <script>
 
 let currentGender = 'all';
-
 let currentCategory = 'Shoes';
 
 function refreshProducts(){
@@ -878,23 +862,18 @@ function refreshProducts(){
             &&
             genero !== currentGender
         ){
-
             show = false;
         }
 
         if(
             categoria !== currentCategory
         ){
-
             show = false;
         }
 
         if(show){
-
             card.classList.remove('hidden');
-
         } else {
-
             card.classList.add('hidden');
         }
 
@@ -907,9 +886,7 @@ function clearMainButtons(){
     document
     .querySelectorAll('.main-filters .filter-btn')
     .forEach(btn => {
-
         btn.classList.remove('active');
-
     });
 
 }
@@ -919,9 +896,7 @@ function clearSubButtons(){
     document
     .querySelectorAll('.sub-filters .filter-btn')
     .forEach(btn => {
-
         btn.classList.remove('active');
-
     });
 
 }
@@ -969,20 +944,15 @@ function sortProducts(order){
         parseFloat(b.dataset.price);
 
         if(order === 'asc'){
-
             return priceA - priceB;
-
         } else {
-
             return priceB - priceA;
         }
 
     });
 
     cards.forEach(card => {
-
         grid.appendChild(card);
-
     });
 
 }
