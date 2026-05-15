@@ -77,7 +77,7 @@ MAX_PROFIT_USD = 35
 
 MIN_PROFIT_USD = 15
 
-MULTIPLIER = 1.75
+MULTIPLIER = 1.7
 
 # ==========================================
 # LIMPIAR PRECIO
@@ -517,6 +517,34 @@ body {{
     color: #444;
 }}
 
+.buy-btn {{
+
+    display: block;
+
+    margin-top: 18px;
+
+    text-align: center;
+
+    background: #b9975b;
+
+    color: white;
+
+    text-decoration: none;
+
+    padding: 14px;
+
+    border-radius: 14px;
+
+    font-weight: bold;
+
+    transition: 0.25s;
+}}
+
+.buy-btn:hover {{
+
+    background: #9d7d42;
+}}
+
 .hidden {{
 
     display: none;
@@ -621,6 +649,13 @@ body {{
         line-height: 1.5;
     }}
 
+    .buy-btn {{
+
+        font-size: 12px;
+
+        padding: 10px;
+    }}
+
 }}
 
 </style>
@@ -636,7 +671,7 @@ body {{
     src="data:image/jpeg;base64,{logo_base64}">
 
     <div class="subtitle">
-        CATÁLOGO ADIDAS
+        Catalogo Adidas
     </div>
 
 </div>
@@ -736,6 +771,23 @@ for _, row in df.iterrows():
         0
     )
 
+    whatsapp_text = f'''
+Hola, quiero pedir este producto:
+
+{nombre}
+
+Precio:
+${int(precio_venta_cop):,} COP
+
+Tallas disponibles:
+{tallas}
+'''
+
+    whatsapp_text = whatsapp_text.replace(
+        "\n",
+        "%0A"
+    )
+
     card = f"""
     <div class="card"
         data-genero="{genero}"
@@ -764,6 +816,15 @@ for _, row in df.iterrows():
                 <strong>Tallas:</strong><br>
                 {tallas}
             </div>
+
+            <a
+            class="buy-btn"
+            href="https://wa.me/TUNUMERO?text={whatsapp_text}"
+            target="_blank">
+
+            Solicitar Pedido
+
+            </a>
 
         </div>
 
