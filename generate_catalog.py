@@ -60,7 +60,7 @@ df = df[
 ]
 
 # ==========================================
-# ELIMINAR CUSHIONED DIRECTAMENTE
+# ELIMINAR CUSHIONED
 # ==========================================
 df = df[
     ~df["Nombre"]
@@ -259,6 +259,28 @@ df["Precio Final USD"] = (
     + df["Ganancia USD"]
 )
 
+# ==========================================
+# FILTRO SLIDES > 42 USD
+# ==========================================
+df = df[
+    ~(
+        df["Nombre"]
+        .astype(str)
+        .str.contains(
+            "slides",
+            case=False,
+            na=False
+        )
+        &
+        (
+            df["Precio Final USD"] > 42
+        )
+    )
+]
+
+# ==========================================
+# PRECIO FINAL COP
+# ==========================================
 df["Precio Venta COP"] = (
 
     df["Precio Final USD"]
@@ -482,8 +504,6 @@ body {{
     height: 94%;
 
     object-fit: contain;
-
-    transition: 0.3s;
 }}
 
 .content {{
@@ -498,8 +518,6 @@ body {{
     color: #9a8762;
 
     margin-bottom: 12px;
-
-    letter-spacing: 0.5px;
 }}
 
 .title {{
@@ -579,101 +597,37 @@ body {{
     color: #9a8762;
 
     font-size: 13px;
-
-    line-height: 1.8;
 }}
 
 @media(max-width: 768px){{
 
     body {{
-
         padding: 12px;
     }}
 
     .logo {{
-
         width: 170px;
     }}
 
-    .subtitle {{
-
-        font-size: 14px;
-    }}
-
-    .filter-btn {{
-
-        padding: 9px 14px;
-
-        font-size: 12px;
-    }}
-
     .grid {{
-
         grid-template-columns:
         repeat(2, 1fr);
 
         gap: 12px;
     }}
 
-    .card {{
-
-        border-radius: 18px;
-    }}
-
     .image-container {{
-
         height: 220px;
-
-        padding-bottom: 16px;
-    }}
-
-    .image-container img {{
-
-        width: 96%;
-
-        height: 96%;
-    }}
-
-    .content {{
-
-        padding: 14px;
-    }}
-
-    .category {{
-
-        font-size: 11px;
-
-        margin-bottom: 8px;
     }}
 
     .title {{
-
         font-size: 15px;
 
         min-height: 42px;
-
-        margin-bottom: 14px;
     }}
 
     .price {{
-
         font-size: 22px;
-
-        margin-bottom: 12px;
-    }}
-
-    .sizes {{
-
-        font-size: 12px;
-
-        line-height: 1.5;
-    }}
-
-    .buy-btn {{
-
-        font-size: 12px;
-
-        padding: 10px;
     }}
 
 }}
@@ -784,7 +738,7 @@ Imagen:
 '''
 
     whatsapp_text = whatsapp_text.replace(
-        "\n",
+        "\\n",
         "%0A"
     )
 
@@ -964,10 +918,7 @@ refreshProducts();
 <div class="footer">
 
 Saroma Store © 2026<br>
-
-Catalogo Adidas<br><br>
-
-Precios en COP sujetos a cambios.
+Catalogo Adidas
 
 </div>
 
@@ -986,7 +937,7 @@ with open(
 
     f.write(html)
 
-print("\n================================")
+print("\\n================================")
 print("CATALOGO GENERADO")
 print("index.html")
 print("================================")
@@ -996,7 +947,7 @@ print("================================")
 # ==========================================
 try:
 
-    print("\n================================")
+    print("\\n================================")
     print("SUBIENDO A GITHUB")
     print("================================")
 
@@ -1020,10 +971,10 @@ try:
         check=True
     )
 
-    print("\n================================")
+    print("\\n================================")
     print("CATALOGO PUBLICADO ONLINE")
     print("================================")
 
 except Exception as e:
 
-    print("\nERROR GIT:", e)
+    print("\\nERROR GIT:", e)
