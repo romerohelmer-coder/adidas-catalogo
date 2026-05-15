@@ -602,20 +602,48 @@ body {{
 
 .menu-btn {{
 
-    border:none;
+    position: fixed;
 
-    background:white;
+    right: 18px;
 
-    border-radius:12px;
+    bottom: 22px;
 
-    padding:10px 14px;
+    z-index: 9999;
 
-    font-size:22px;
+    border: none;
 
-    cursor:pointer;
+    background: #b9975b;
+
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 14px 18px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
 
     box-shadow:
-    0 4px 12px rgba(0,0,0,0.08);
+    0 8px 22px rgba(0,0,0,0.22);
+
+    transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}}
+
+.menu-btn:hover {{
+
+    transform:
+    scale(1.06);
+}}
+
+.menu-btn:active {{
+
+    transform:
+    scale(0.96);
 }}
 
 @media(max-width:768px){{
@@ -736,17 +764,13 @@ body {{
 
 </div>
 
-<div style="margin-bottom:16px;">
+<button
+class="menu-btn"
+onclick="toggleSidebarMenu()">
 
-    <button
-    class="menu-btn"
-    onclick="toggleSidebarMenu()">
+☰
 
-    ☰
-
-    </button>
-
-</div>
+</button>
 
 <div class="catalog-layout">
 
