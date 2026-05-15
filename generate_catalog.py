@@ -1,5 +1,6 @@
 import pandas as pd
 import subprocess
+import base64
 
 # ==========================================
 # LEER EXCEL
@@ -52,6 +53,18 @@ df = df[
 ]
 
 # ==========================================
+# LOGO BASE64
+# ==========================================
+with open(
+    "logo.jpg",
+    "rb"
+) as image_file:
+
+    logo_base64 = base64.b64encode(
+        image_file.read()
+    ).decode("utf-8")
+
+# ==========================================
 # CONFIG
 # ==========================================
 USD_TO_COP = 3750
@@ -95,12 +108,10 @@ def adjust_category(row):
         row.get("Tallas", "")
     ).lower()
 
-    # ONE SIZE = ACCESSORIES
     if "one size" in tallas:
 
         return "Accessories"
 
-    # UNISEX + CLOTHING
     if (
         genero == "unisex"
         and categoria == "Clothing"
@@ -148,12 +159,10 @@ def calculate_shipping(row):
         row.get("Nombre", "")
     ).lower()
 
-    # ACCESSORIES
     if categoria == "accessories":
 
         return 3
 
-    # SLIDES
     if (
         categoria == "shoes"
         and "slides" in nombre
@@ -161,12 +170,10 @@ def calculate_shipping(row):
 
         return 5
 
-    # CLOTHING
     if categoria == "clothing":
 
         return 5
 
-    # SHOES KIDS
     if (
         categoria == "shoes"
         and "kids" in genero
@@ -174,7 +181,6 @@ def calculate_shipping(row):
 
         return 5
 
-    # SHOES ADULT
     if categoria == "shoes":
 
         return 7
@@ -224,7 +230,7 @@ df["Ganancia USD"] = (
 )
 
 # ==========================================
-# PRECIO FINAL USD
+# PRECIO FINAL
 # ==========================================
 df["Precio Final USD"] = (
 
@@ -233,9 +239,6 @@ df["Precio Final USD"] = (
     + df["Ganancia USD"]
 )
 
-# ==========================================
-# PRECIO FINAL COP
-# ==========================================
 df["Precio Venta COP"] = (
 
     df["Precio Final USD"]
@@ -256,7 +259,7 @@ df.sort_values(
 # ==========================================
 # HTML
 # ==========================================
-html = """
+html = f"""
 <!DOCTYPE html>
 <html lang="es">
 
@@ -267,48 +270,58 @@ html = """
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Catalogo Adidas</title>
+<title>Saroma Store</title>
 
 <style>
 
-body {
+body {{
 
     font-family: Arial, sans-serif;
 
-    background: #f5f5f5;
+    background:
+    linear-gradient(
+        to bottom,
+        #f9f6ef,
+        #f5f1e8
+    );
 
     margin: 0;
 
     padding: 30px;
-}
 
-h1 {
+    color: #2d2d2d;
+}}
 
-    text-align: center;
-
-    margin-bottom: 10px;
-
-    font-size: 58px;
-
-    font-weight: bold;
-}
-
-.subtitle {
+.header {{
 
     text-align: center;
 
-    color: gray;
+    margin-bottom: 30px;
+}}
 
-    margin-bottom: 40px;
+.logo {{
 
-    font-size: 18px;
-}
+    width: 260px;
 
-/* ===================================== */
-/* STICKY FILTERS */
-/* ===================================== */
+    max-width: 80%;
 
-.filters-sticky {
+    opacity: 0.96;
+
+    margin-bottom: 12px;
+}}
+
+.subtitle {{
+
+    color: #8a7a55;
+
+    font-size: 16px;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 35px;
+}}
+
+.filters-sticky {{
 
     position: sticky;
 
@@ -316,27 +329,23 @@ h1 {
 
     z-index: 999;
 
-    background: #f5f5f5;
+    background:
+    rgba(249,246,239,0.96);
 
-    padding-top: 15px;
+    backdrop-filter: blur(10px);
+
+    padding-top: 14px;
 
     padding-bottom: 18px;
-}
 
-.main-filters {
+    border-bottom:
+    1px solid #e9dfcb;
 
-    display: flex;
+    margin-bottom: 35px;
+}}
 
-    justify-content: center;
-
-    gap: 16px;
-
-    flex-wrap: wrap;
-
-    margin-bottom: 18px;
-}
-
-.sub-filters {
+.main-filters,
+.sub-filters {{
 
     display: flex;
 
@@ -345,78 +354,97 @@ h1 {
     gap: 14px;
 
     flex-wrap: wrap;
-}
+}}
 
-.filter-btn {
+.main-filters {{
+
+    margin-bottom: 16px;
+}}
+
+.filter-btn {{
 
     padding: 12px 24px;
 
-    border-radius: 12px;
+    border-radius: 30px;
 
-    border: 1px solid #ddd;
+    border: 1px solid #d8c7a2;
 
     background: white;
 
-    font-size: 15px;
+    color: #8a6b2f;
+
+    font-size: 14px;
 
     font-weight: bold;
 
     cursor: pointer;
 
-    transition: 0.2s;
-}
+    transition: 0.25s;
+}}
 
-.filter-btn:hover {
+.filter-btn:hover {{
 
-    background: black;
-
-    color: white;
-}
-
-.filter-btn.active {
-
-    background: black;
+    background: #b9975b;
 
     color: white;
-}
+}}
 
-.grid {
+.filter-btn.active {{
+
+    background: #b9975b;
+
+    color: white;
+
+    border-color: #b9975b;
+}}
+
+.grid {{
 
     display: grid;
 
     grid-template-columns:
     repeat(auto-fill, minmax(320px, 1fr));
 
-    gap: 24px;
+    gap: 26px;
+}}
 
-    margin-top: 35px;
-}
-
-.card {
+.card {{
 
     background: white;
 
-    border-radius: 14px;
+    border-radius: 24px;
 
     overflow: hidden;
 
-    border: 1px solid #e5e5e5;
+    border:
+    1px solid #eadfcb;
 
-    transition: 0.2s;
-}
+    transition: 0.25s;
 
-.card:hover {
+    box-shadow:
+    0 8px 25px rgba(0,0,0,0.04);
+}}
 
-    transform: translateY(-4px);
-}
+.card:hover {{
 
-.image-container {
+    transform: translateY(-5px);
+
+    box-shadow:
+    0 14px 34px rgba(0,0,0,0.08);
+}}
+
+.image-container {{
 
     width: 100%;
 
     height: 380px;
 
-    background: #f3f3f3;
+    background:
+    linear-gradient(
+        to bottom,
+        #f8f6f2,
+        #f1ede5
+    );
 
     display: flex;
 
@@ -425,32 +453,34 @@ h1 {
     justify-content: center;
 
     padding-bottom: 30px;
-}
+}}
 
-.image-container img {
+.image-container img {{
 
     width: 88%;
 
     height: 88%;
 
     object-fit: contain;
-}
+}}
 
-.content {
+.content {{
 
-    padding: 24px;
-}
+    padding: 26px;
+}}
 
-.category {
+.category {{
 
-    font-size: 14px;
+    font-size: 13px;
 
-    color: gray;
+    color: #9a8762;
 
     margin-bottom: 12px;
-}
 
-.title {
+    letter-spacing: 0.5px;
+}}
+
+.title {{
 
     font-size: 22px;
 
@@ -461,55 +491,68 @@ h1 {
     min-height: 64px;
 
     margin-bottom: 24px;
-}
 
-.price {
+    color: #2b2b2b;
+}}
 
-    font-size: 42px;
+.price {{
+
+    font-size: 40px;
 
     font-weight: bold;
 
-    margin-bottom: 22px;
-}
+    margin-bottom: 20px;
 
-.sizes {
+    color: #9a6f20;
+}}
 
-    font-size: 16px;
+.sizes {{
+
+    font-size: 15px;
 
     line-height: 1.8;
-}
 
-.hidden {
+    color: #444;
+}}
+
+.hidden {{
 
     display: none;
-}
+}}
 
-.footer {
+.footer {{
 
     text-align: center;
 
-    margin-top: 60px;
+    margin-top: 70px;
 
-    color: gray;
+    color: #9a8762;
 
-    font-size: 14px;
-}
+    font-size: 13px;
 
-@media(max-width: 768px){
+    line-height: 1.8;
+}}
 
-    h1 {
+@media(max-width: 768px){{
 
-        font-size: 38px;
-    }
+    body {{
 
-    .filter-btn {
+        padding: 16px;
+    }}
 
-        font-size: 13px;
+    .logo {{
+
+        width: 190px;
+    }}
+
+    .filter-btn {{
 
         padding: 10px 18px;
-    }
 
-}
+        font-size: 13px;
+    }}
+
+}}
 
 </style>
 
@@ -517,10 +560,16 @@ h1 {
 
 <body>
 
-<h1>CATALOGO ADIDAS</h1>
+<div class="header">
 
-<div class="subtitle">
-Catalogo actualizado automaticamente
+    <img
+    class="logo"
+    src="data:image/jpeg;base64,{logo_base64}">
+
+    <div class="subtitle">
+        Luxury Fashion & Sneakers
+    </div>
+
 </div>
 
 <div class="filters-sticky">
@@ -684,7 +733,6 @@ function refreshProducts(){
 
         let show = true;
 
-        // genero
         if(
             currentGender !== 'all'
             &&
@@ -694,7 +742,6 @@ function refreshProducts(){
             show = false;
         }
 
-        // categoria
         if(
             categoria !== currentCategory
         ){
@@ -719,27 +766,27 @@ function clearMainButtons(){
 
     document
     .querySelectorAll('.main-filters .filter-btn')
-    .forEach(btn => {
+    .forEach(btn => {{
 
         btn.classList.remove('active');
 
-    });
+    }});
 
 }
 
-function clearSubButtons(){
+function clearSubButtons(){{
 
     document
     .querySelectorAll('.sub-filters .filter-btn')
-    .forEach(btn => {
+    .forEach(btn => {{
 
         btn.classList.remove('active');
 
-    });
+    }});
 
-}
+}}
 
-function setGender(gender, button){
+function setGender(gender, button){{
 
     currentGender = gender;
 
@@ -749,9 +796,9 @@ function setGender(gender, button){
 
     refreshProducts();
 
-}
+}}
 
-function setCategory(category, button){
+function setCategory(category, button){{
 
     currentCategory = category;
 
@@ -761,9 +808,9 @@ function setCategory(category, button){
 
     refreshProducts();
 
-}
+}}
 
-function sortProducts(order){
+function sortProducts(order){{
 
     const grid =
     document.getElementById('productGrid');
@@ -773,7 +820,7 @@ function sortProducts(order){
         document.querySelectorAll('.card')
     );
 
-    cards.sort((a, b) => {
+    cards.sort((a, b) => {{
 
         const priceA =
         parseFloat(a.dataset.price);
@@ -781,24 +828,24 @@ function sortProducts(order){
         const priceB =
         parseFloat(b.dataset.price);
 
-        if(order === 'asc'){
+        if(order === 'asc'){{
 
             return priceA - priceB;
 
-        } else {
+        }} else {{
 
             return priceB - priceA;
-        }
+        }}
 
-    });
+    }});
 
-    cards.forEach(card => {
+    cards.forEach(card => {{
 
         grid.appendChild(card);
 
-    });
+    }});
 
-}
+}}
 
 refreshProducts();
 
@@ -806,9 +853,11 @@ refreshProducts();
 
 <div class="footer">
 
-Catalogo generado automaticamente<br><br>
+Saroma Store © 2026<br>
 
-Precios en COP. Sujetos a cambios.
+Luxury Fashion & Sneakers<br><br>
+
+Precios en COP sujetos a cambios.
 
 </div>
 
