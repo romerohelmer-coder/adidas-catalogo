@@ -14,6 +14,16 @@ df = pd.read_excel(
 df = df.fillna("")
 
 # ==========================================
+# ELIMINAR SIN STOCK
+# ==========================================
+df = df[
+    df["Tallas"]
+    .astype(str)
+    .str.strip()
+    != ""
+]
+
+# ==========================================
 # FILTRAR PRODUCTOS NO DESEADOS
 # ==========================================
 exclude_keywords = [
@@ -85,16 +95,12 @@ def adjust_category(row):
         row.get("Tallas", "")
     ).lower()
 
-    nombre = str(
-        row.get("Nombre", "")
-    ).lower()
-
     # ONE SIZE = ACCESSORIES
     if "one size" in tallas:
 
         return "Accessories"
 
-    # UNISEX + CLOTHING = ACCESSORIES
+    # UNISEX + CLOTHING
     if (
         genero == "unisex"
         and categoria == "Clothing"
@@ -298,6 +304,25 @@ h1 {
     font-size: 18px;
 }
 
+/* ===================================== */
+/* STICKY FILTERS */
+/* ===================================== */
+
+.filters-sticky {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 999;
+
+    background: #f5f5f5;
+
+    padding-top: 15px;
+
+    padding-bottom: 18px;
+}
+
 .main-filters {
 
     display: flex;
@@ -320,8 +345,6 @@ h1 {
     gap: 14px;
 
     flex-wrap: wrap;
-
-    margin-bottom: 45px;
 }
 
 .filter-btn {
@@ -365,6 +388,8 @@ h1 {
     repeat(auto-fill, minmax(320px, 1fr));
 
     gap: 24px;
+
+    margin-top: 35px;
 }
 
 .card {
@@ -477,6 +502,13 @@ h1 {
         font-size: 38px;
     }
 
+    .filter-btn {
+
+        font-size: 13px;
+
+        padding: 10px 18px;
+    }
+
 }
 
 </style>
@@ -491,58 +523,62 @@ h1 {
 Catalogo actualizado automaticamente
 </div>
 
-<!-- GENERO -->
-<div class="main-filters">
+<div class="filters-sticky">
 
-    <button class="filter-btn active"
-    onclick="setGender('all', this)">
-    ALL
-    </button>
+    <!-- GENERO -->
+    <div class="main-filters">
 
-    <button class="filter-btn"
-    onclick="setGender('Men', this)">
-    MEN
-    </button>
+        <button class="filter-btn active"
+        onclick="setGender('all', this)">
+        ALL
+        </button>
 
-    <button class="filter-btn"
-    onclick="setGender('Women', this)">
-    WOMEN
-    </button>
+        <button class="filter-btn"
+        onclick="setGender('Men', this)">
+        MEN
+        </button>
 
-    <button class="filter-btn"
-    onclick="setGender('Kids', this)">
-    KIDS
-    </button>
+        <button class="filter-btn"
+        onclick="setGender('Women', this)">
+        WOMEN
+        </button>
 
-</div>
+        <button class="filter-btn"
+        onclick="setGender('Kids', this)">
+        KIDS
+        </button>
 
-<!-- CATEGORIA -->
-<div class="sub-filters">
+    </div>
 
-    <button class="filter-btn active"
-    onclick="setCategory('Shoes', this)">
-    ZAPATOS
-    </button>
+    <!-- CATEGORIA -->
+    <div class="sub-filters">
 
-    <button class="filter-btn"
-    onclick="setCategory('Clothing', this)">
-    ROPA
-    </button>
+        <button class="filter-btn active"
+        onclick="setCategory('Shoes', this)">
+        ZAPATOS
+        </button>
 
-    <button class="filter-btn"
-    onclick="setCategory('Accessories', this)">
-    ACCESORIOS
-    </button>
+        <button class="filter-btn"
+        onclick="setCategory('Clothing', this)">
+        ROPA
+        </button>
 
-    <button class="filter-btn"
-    onclick="sortProducts('asc')">
-    ⬆ PRECIO
-    </button>
+        <button class="filter-btn"
+        onclick="setCategory('Accessories', this)">
+        ACCESORIOS
+        </button>
 
-    <button class="filter-btn"
-    onclick="sortProducts('desc')">
-    PRECIO ⬇
-    </button>
+        <button class="filter-btn"
+        onclick="sortProducts('asc')">
+        ⬆ PRECIO
+        </button>
+
+        <button class="filter-btn"
+        onclick="sortProducts('desc')">
+        PRECIO ⬇
+        </button>
+
+    </div>
 
 </div>
 
