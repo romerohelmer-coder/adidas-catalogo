@@ -766,21 +766,36 @@ for _, row in df.iterrows():
         ""
     )
 
+    sku = row.get(
+        "SKU",
+        ""
+    )
+
     precio_venta_cop = row.get(
         "Precio Venta COP",
         0
     )
 
     whatsapp_text = f'''
-Hola, quiero pedir este producto:
+Buen día, deseo pedir el siguiente producto.
 
+Producto:
 {nombre}
+
+SKU:
+{sku}
+
+Categoria:
+{categoria_final}
 
 Precio:
 ${int(precio_venta_cop):,} COP
 
 Tallas disponibles:
 {tallas}
+
+Imagen:
+{imagen}
 '''
 
     whatsapp_text = whatsapp_text.replace(
@@ -819,7 +834,7 @@ Tallas disponibles:
 
             <a
             class="buy-btn"
-            href="https://wa.me/TUNUMERO?text={whatsapp_text}"
+            href="https://wa.me/573105706630?text={whatsapp_text}"
             target="_blank">
 
             Solicitar Pedido
